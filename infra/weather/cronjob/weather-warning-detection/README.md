@@ -27,7 +27,7 @@
   "users": [
     {
       "send_name": "张璇",
-      "open_id": "ou_a4d2c263956ef162bd72bb3030500769",
+      "open_id": "ou_YOU——OPEN——ID",
       "city_code": "110105",
       "city_name": "北京市朝阳区",
       "hour": 8,
@@ -35,7 +35,7 @@
     }
   ],
   "feishu_webhooks": [
-    "https://open.feishu.cn/open-apis/bot/v2/hook/a059c069-a6bf-4937-9e61-cf9b2c9c667d"
+    "FEISHU_WEBHOOK"
   ]
 }
 ```
