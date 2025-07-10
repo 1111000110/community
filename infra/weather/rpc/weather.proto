@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package weather;
+
+option go_package = "./";
+// 天气增加关注城市请求
+message WeatherAddDataReq {
+  string UserName=1;
+  string OpenId=2;
+  string UserId=3;
+  string City=4;
+  string Time=5;
+  string MaxTemperature=6;
+  string MinTemperature=7;
+  repeated string Weather=8;
+  int64 Status=9;
+}
+
+// 天气增加关注城市响应
+message WeatherAddDataResp {}
+
+// 用户服务
+service WeatherService {
+  rpc WeatherAddData(WeatherAddDataReq) returns(WeatherAddDataResp);
+}
+
+

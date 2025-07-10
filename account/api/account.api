@@ -1,0 +1,155 @@
+syntax = "v1"
+
+info (
+	title:   "用户模块"
+	desc:    "用户模块"
+	author:  "张璇"
+	email:   "xatuzx2025@163.com"
+	version: "1.0"
+)
+
+type (
+	UserBase { // 用户基本信息
+		UserId    int64  `json:"user_id"`
+		NickName  string `json:"nick_name"`
+		Avatar    string `json:"avatar"`
+		Gender    string `json:"gender"`
+		BirthDate int64  `json:"birthdate"`
+	}
+	UserPrivate { // 用户私密信息
+		UserId   int64  `json:"user_id"`
+		Phone    string `json:"phone"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
+		Role     string `json:"role"`
+		Status   int64  `json:"status"`
+	}
+	UserInfo { // 用户详情
+		UserBase    UserBase    `json:"user_base"`
+		UserPrivate UserPrivate `json:"user_private"`
+	}
+	Relations { // 用户关系详情
+		RelationsId      int64 `json:"relations_id"`
+		UserId           int64 `json:"user_id"`
+		OtherId          int64 `json:"other_id"`
+		RelationshipType int64 `json:"relationship_type"`
+	}
+)
+
+type ( // 登录
+	UserLoginReq {
+		Phone    string `json:"phone"`
+		UserId   int64  `json:"userId"`
+		Password string `json:"password"`
+	}
+	UserLoginResp {
+		Token string `json:"token"`
+	}
+)
+
+type ( // 注册
+	UserRegisterReq {
+		Phone    string `json:"phone"`
+		Password string `json:"password"`
+		Role     string `json:"role"`
+	}
+	UserRegisterResp {
+		UserId int64  `json:"user_id"`
+		Token  string `json:"token"`
+	}
+)
+
+@server (
+	group:      user // 登录
+	timeout:    3s // 超时时间
+	maxBytes:   1048576 // 最大结构体
+	middleware: Middleware // 中间件
+)
+service account {
+	@handler userLogin
+	post /user/login (UserLoginReq) returns (UserLoginResp)
+
+	@handler userRegister
+	post /user/register (UserRegisterReq) returns (UserRegisterResp)
+}
+
+type ( // 删除
+	UserDeleteReq {
+		Phone    string `json:"phone"` // 根据手机号删除用户
+		UserId   int64  `json:"user_id"`
+		Password string `json:"password"`
+	}
+	UserDeleteResp  {}
+)
+
+type ( // 修改
+	UserUpdateReq {
+		User UserBase `json:"user_base"`
+	}
+	UserUpdateResp  {}
+)
+
+type ( // 查询
+	UserQueryReq {
+		QueryUserId int64  `json:"query_user_id"`
+		Type        string `json:"type"`
+	}
+	UserQueryResp {
+		User UserInfo `json:"user_info"`
+	}
+)
+
+@server (
+	group:      user // 统一管理用户相关 API
+	timeout:    3s // 超时时间
+	maxBytes:   1048576 // 最大结构体
+	middleware: Middleware // 中间件
+	jwt:        Auth // JWT 认证
+)
+service account {
+	@handler userDelete
+	post /user/delete (UserDeleteReq) returns (UserDeleteResp)
+
+	@handler userUpdate
+	post /user/update (UserUpdateReq) returns (UserUpdateResp)
+
+	@handler userQuery
+	post /user/query (UserQueryReq) returns (UserQueryResp)
+}
+
+type (
+	UserRelationsUpdateReq {
+		UserId           int64 `json:"user_id"`
+		OUserId          int64 `json:"o_user_id"`
+		relationshipType int64 `json:"relations"`
+	}
+	UserRelationsUpdateResp {
+		Relations Relations `json:"relations"`
+	}
+)
+
+type (
+	UserRelationsGetReq {
+		UserId  int64 `json:"user_id"`
+		OUserId int64 `json:"o_user_id"`
+	}
+	UserRelationsGetResp {
+		Relations Relations `json:"relations"`
+	}
+)
+
+@server (
+	group:      relations // 统一管理用户相关 API
+	timeout:    3s // 超时时间
+	maxBytes:   1048576 // 最大结构体
+	middleware: Middleware // 中间件
+	jwt:        Auth // JWT 认证
+)
+service account {
+	@handler userRelationsUpdate
+	post /userRelations/update (UserRelationsUpdateReq) returns (UserRelationsUpdateResp)
+
+	@handler userRelationsGet
+	post /userRelations/get (UserRelationsGetReq) returns (UserRelationsGetResp)
+}
+

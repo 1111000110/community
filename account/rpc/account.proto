@@ -1,0 +1,115 @@
+syntax = "proto3";
+
+package account;
+
+option go_package = "./";
+message User {
+    int64 UserId=1;
+    string Phone=2;
+    string Email=3;
+   string Password=4;
+   string Nickname=5;
+   string Avatar=6;
+   string Gender=7;
+   int64 BirthDate=8;
+   string Role=9;
+   int64 Status=10;
+    int64 createAt=11;
+    int64 updateAt=12;
+}
+// 用户登录请求
+message UserLoginReq {
+    string Phone = 1;
+    int64 UserId = 2;
+    string Password = 3;
+}
+
+// 用户登录响应
+message UserLoginResp {
+    string Token=1;
+}
+
+// 用户注册请求
+message UserRegisterReq {
+    string Phone = 1;
+    string Password = 2;
+    string Role = 3;
+}
+
+// 用户注册响应
+message UserRegisterResp {
+   string Token=1;
+   int64 UserId=2;
+}
+
+// 用户删除请求
+message UserDeleteReq {
+    string Phone = 1; // 根据手机号删除用户
+    int64 UserId = 2;
+    string Password = 3;
+}
+
+// 用户删除响应
+message UserDeleteResp {
+    User User=1;
+}
+
+// 用户更新请求
+message UserUpdateReq {
+    User User=1;
+}
+
+// 用户更新响应
+message UserUpdateResp {
+    User User=1;
+}
+
+// 用户查询请求
+message UserQueryReq {
+    int64 UserId = 1;
+    string type =2;
+}
+
+// 用户查询响应
+message UserQueryResp {
+    User User=1;
+}
+
+message Relations{
+    int64 RelationsId =1;
+    int64    UserId =2;
+    int64    OtherId =3;
+    int64   RelationshipType=4;
+    int64 createAt=5;
+    int64 updateAt=6;
+}
+message UserRelationsUpdateReq{
+    int64 UserId =1;
+    int64 OUserId=2;
+    int64 RelationshipType =3;
+}
+message UserRelationsUpdateResp{
+    Relations Relations =1;
+}
+message UserRelationsGetReq{
+    int64 UserId=1;
+    int64 OUserId =2;
+}
+message UserRelationsGetResp{
+    Relations Relations=1;
+}
+// 用户服务
+service UserService {
+    rpc UserLogin (UserLoginReq) returns (UserLoginResp);
+    rpc UserRegister (UserRegisterReq) returns (UserRegisterResp);
+    rpc UserDelete (UserDeleteReq) returns (UserDeleteResp);
+    rpc UserUpdate (UserUpdateReq) returns (UserUpdateResp);
+    rpc UserQuery (UserQueryReq) returns (UserQueryResp);
+}
+// 关系服务
+service RelationsService {
+    rpc UserRelationsUpdate (UserRelationsUpdateReq) returns (UserRelationsUpdateResp);
+    rpc UserRelationsGet (UserRelationsGetReq) returns (UserRelationsGetResp);
+}
+
+

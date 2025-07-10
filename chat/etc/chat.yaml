@@ -1,0 +1,21 @@
+Name: chat
+Host: 0.0.0.0
+Port: 8888
+WebSocket:
+  WriteWait: 10
+  PongWait: 30
+  PingPeriod: 27
+  maxMessageSize: 512
+  bufSize: 256
+Pusher:
+  Brokers:
+    - 127.0.0.1:29092
+  Topic: chatSend
+Receive:
+  Name: kq
+  Brokers:
+    - 127.0.0.1:29092
+  Group: foo
+  Topic: chatSend
+  Offset: first
+  Consumers: 1

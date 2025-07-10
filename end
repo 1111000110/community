@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+# 打印当前目录
+echo "Current directory: $(pwd)"
+
+## 停止并清理 Docker Compose 服务
+#echo "Stopping Docker Compose services..."
+#docker-compose down
+#echo "Docker Compose services stopped and cleaned."
+
+# 停止 etcd
+echo "Stopping etcd..."
+pkill etcd
+echo "etcd stopped."
+
+# 停止 user-rpc 和 user-api
+echo "Stopping userRpc..."
+pkill account-api
+echo "userRpc stopped."
+
+echo "Stopping userApi..."
+pkill account-rpc
+echo "userApi stopped."
+
+# 清理日志文件（可选）
+echo "Cleaning log files..."
+rm -f etcd.log
+rm -rf etcd-data
+echo "Log files cleaned."
+cd account/api || exit
+rm -rf account-api account-api.log
+cd ../../
+cd account/rpc || exit
+rm -rf account-rpc account-rpc.log
+cd ../../
+echo "All services stopped and resources cleaned."

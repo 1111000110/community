@@ -1,0 +1,11 @@
+Name: account.rpc
+ListenOn: 0.0.0.0:8081
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: account.rpc
+Token:
+  AccessSecret: "ZhangXuanWangTing"
+  AccessExpire:  86400
+MysqlConf:
+  Account: "root:@tcp(127.0.0.1:3306)/community?charset=utf8mb4&parseTime=True&loc=Local"

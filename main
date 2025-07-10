@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# 打印当前目录
+echo "Current directory: $(pwd)"
+
+## 启动 Docker Compose 服务
+#docker-compose up -d
+
+# 启动 etcd 在后台运行，并将日志输出到文件
+etcd --data-dir=./etcd-data > etcd.log 2>&1 &
+ETCD_PID=$!
+echo "etcd started with PID $ETCD_PID"
+
+# 等待 etcd 启动完成
+echo "Waiting for etcd to start..."
+for i in {1..100}; do
+    if nc -z 127.0.0.1 2379; then
+        echo "etcd started successfully."
+        break
+    else
+        echo "Waiting for etcd to start... ($i/100)"
+        sleep 1
+    fi
+done
+
+# 如果 etcd 未能启动，退出脚本
+if ! nc -z 127.0.0.1 2379; then
+    ./end
+     echo "etcd failed to start. Exiting..."
+    exit 1
+fi
+
+# 编译并运行 user-rpc
+cd account/rpc || exit
+go build -o account-rpc account.go
+./account-rpc > account-rpc.log 2>&1 &
+cd ../../
+
+# 编译并运行 user-api
+cd account/api || exit
+go build -o account-api account.go
+./account-api > account-api.log 2>&1 &
+cd ../../
+
+echo "All services started successfully."
