@@ -19,31 +19,23 @@
 
 ### config.json 配置文件
 
-```json
+``` json
 {
   "weather_api": {
-    "key": "YOUR_AMAP_API_KEY"
+    "key": "726915a2274707078bf0db65ee067322"
   },
   "users": [
     {
-      "send_name": "张轩",
-      "open_id": "YOUR_OPEN_ID_1",
+      "send_name": "张璇",
+      "open_id": "ou_a4d2c263956ef162bd72bb3030500769",
       "city_code": "110105",
       "city_name": "北京市朝阳区",
       "hour": 8,
       "minute": 0
-    },
-    {
-      "send_name": "用户2",
-      "open_id": "YOUR_OPEN_ID_2",
-      "city_code": "310100",
-      "city_name": "上海市",
-      "hour": 18,
-      "minute": 30
     }
   ],
   "feishu_webhooks": [
-    "https://open.feishu.cn/open-apis/bot/v2/hook/YOUR_WEBHOOK_KEY"
+    "https://open.feishu.cn/open-apis/bot/v2/hook/a059c069-a6bf-4937-9e61-cf9b2c9c667d"
   ]
 }
 ```
