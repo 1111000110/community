@@ -6,8 +6,13 @@
 
 - 🌤️ **实时天气获取**: 使用高德地图API获取实时天气和预报信息
 - 🤖 **AI智能提示**: 集成Moonshot AI生成个性化天气关怀提示
-- 📱 **飞书通知**: 支持通过飞书Webhook发送天气信息
-- ⚠️ **预警检测**: 自动识别恶劣天气并发送预警通知
+- 📱 **多群组通知**: 支持同时发送到多个飞书群组
+- 👥 **多用户独立配置**: 每个用户可配置独立的城市、时间和个人信息
+- 🌍 **多地点支持**: 不同用户可获取不同城市的天气信息
+- ⚠️ **智能预警**: 自动识别恶劣天气并发送预警通知
+- ⏰ **个性化定时**: 每个用户可设置独立的执行时间，精确到分钟
+- 🔄 **配置热重载**: 修改配置文件立即生效，无需重启
+- 🚀 **强制执行**: 支持-all参数强制发送，忽略时间和预警检测
 - ⚙️ **配置灵活**: 支持JSON配置文件，易于部署和管理
 
 ## 配置说明
@@ -17,26 +22,43 @@
 ```json
 {
   "weather_api": {
-    "key": "YOUR_AMAP_API_KEY",
-    "city_code": "110105",
-    "city_name": "北京市朝阳区",
-    "send_name": "张璇",
-    "open_id": "ou_a4d2c263956ef162bd72bb3030500769"
+    "key": "YOUR_AMAP_API_KEY"
   },
-  "feishu": {
-    "webhook_url": "YOUR_FEISHU_WEBHOOK_URL"
-  }
+  "users": [
+    {
+      "send_name": "张轩",
+      "open_id": "YOUR_OPEN_ID_1",
+      "city_code": "110105",
+      "city_name": "北京市朝阳区",
+      "hour": 8,
+      "minute": 0
+    },
+    {
+      "send_name": "用户2",
+      "open_id": "YOUR_OPEN_ID_2",
+      "city_code": "310100",
+      "city_name": "上海市",
+      "hour": 18,
+      "minute": 30
+    }
+  ],
+  "feishu_webhooks": [
+    "https://open.feishu.cn/open-apis/bot/v2/hook/YOUR_WEBHOOK_KEY"
+  ]
 }
 ```
 
 ### 配置项说明
 
 - `weather_api.key`: 高德地图API密钥
-- `weather_api.city_code`: 城市编码（如北京朝阳区：110105）
-- `weather_api.city_name`: 城市名称
-- `weather_api.send_name`: 发送者姓名
-- `weather_api.open_id`: 飞书用户OpenID
-- `feishu.webhook_url`: 飞书机器人Webhook地址
+- `users`: 用户列表，支持多个用户，每个用户可配置独立的城市和时间
+  - `send_name`: 用户姓名
+  - `open_id`: 飞书用户OpenID
+  - `city_code`: 城市编码（如北京朝阳区：110105）
+  - `city_name`: 城市名称
+  - `hour`: 小时（0-23）
+  - `minute`: 分钟（0-59）
+- `feishu_webhooks`: 飞书机器人Webhook地址列表，支持多个群组
 
 ## 使用方法
 
@@ -50,24 +72,48 @@ go build -o weather-warning-detection main.go
 ### 2. 运行程序
 
 ```bash
-# 使用默认配置文件 config.json
+# 使用默认配置文件 config.json（仅在用户配置的时间点执行）
 ./weather-warning-detection
 
 # 指定配置文件路径
 ./weather-warning-detection -config /path/to/your/config.json
+
+# 强制执行所有用户，忽略时间检查和预警检测
+./weather-warning-detection -all
+
+# 组合使用
+./weather-warning-detection -config /path/to/config.json -all
 ```
 
 ### 3. 定时任务设置
 
-可以使用crontab设置定时任务，例如每天早上8点执行：
+**推荐配置：每分钟执行一次，程序内部为每个用户根据配置的时间点决定是否真正执行**
 
 ```bash
 # 编辑crontab
 crontab -e
 
-# 添加定时任务（每天8:00执行）
-0 8 * * * /path/to/weather-warning-detection -config /path/to/config.json
+# 添加定时任务（每分钟执行一次，程序内部为每个用户判断时间）
+* * * * * /path/to/weather-warning-detection -config /path/to/config.json >/dev/null 2>&1
+
+# 如果需要日志记录
+* * * * * /path/to/weather-warning-detection -config /path/to/config.json >> /var/log/weather.log 2>&1
 ```
+
+**传统配置：如果所有用户时间相同，可直接在crontab中设置具体时间**
+
+```bash
+# 每天8:00和18:00执行（适用于所有用户时间相同的情况）
+0 8,18 * * * /path/to/weather-warning-detection -config /path/to/config.json -all
+```
+
+### 4. 工作原理
+
+- 程序每次运行时会遍历所有用户配置
+- 对于每个用户，检查当前时间是否匹配该用户的执行时间（hour:minute）
+- 匹配的用户会获取其对应城市的天气信息并发送
+- 使用`-all`参数时，忽略时间检查，为所有用户发送天气信息
+- 每个用户可以设置不同的城市和执行时间，实现个性化配置
 
 ## 预警关键词
 

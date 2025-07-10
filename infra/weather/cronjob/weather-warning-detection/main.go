@@ -8,24 +8,29 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"path/filepath"
+	"strings"
+	"time"
 
 	"community.com/pkg/feishu"
 	"community.com/pkg/kimi"
 )
 
-// 配置结构
+// 用户配置结构
+type UserConfig struct {
+	SendName string `json:"send_name"`
+	OpenID   string `json:"open_id"`
+	CityCode string `json:"city_code"`
+	CityName string `json:"city_name"`
+	Hour     int    `json:"hour"`
+	Minute   int    `json:"minute"`
+}
+
 type Config struct {
 	WeatherAPI struct {
-		Key      string `json:"key"`
-		CityCode string `json:"city_code"`
-		CityName string `json:"city_name"`
-		SendName string `json:"send_name"`
-		OpenID   string `json:"open_id"`
+		Key string `json:"key"`
 	} `json:"weather_api"`
-	Feishu struct {
-		WebhookURL string `json:"webhook_url"`
-	} `json:"feishu"`
+	Users  []UserConfig `json:"users"`
+	Feishu []string     `json:"feishu_webhooks"`
 }
 
 // 高德天气API响应结构
@@ -95,67 +100,63 @@ func loadConfig(configPath string) error {
 	return nil
 }
 
-// 获取天气信息
-func getWeather() (string, error) {
-	// 使用高德开放平台API
-	return getAmapWeather()
-}
-
 // 使用高德开放平台API获取天气
-func getAmapWeather() (string, error) {
+func getAmapWeather(user UserConfig) (string, bool, error) {
+	fmt.Printf("开始获取%s的天气信息...\n", user.CityName)
+
 	// 构建请求URL
 	url := fmt.Sprintf("https://restapi.amap.com/v3/weather/weatherInfo?key=%s&city=%s&extensions=all",
-		config.WeatherAPI.Key, config.WeatherAPI.CityCode)
+		config.WeatherAPI.Key, user.CityCode)
 
 	// 发送GET请求
 	resp, err := http.Get(url)
 	if err != nil {
-		return "", fmt.Errorf("获取天气信息失败: %v", err)
+		return "", false, fmt.Errorf("获取天气信息失败: %v", err)
 	}
 	defer resp.Body.Close()
 
 	// 读取响应内容
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("读取响应内容失败: %v", err)
+		return "", false, fmt.Errorf("读取响应内容失败: %v", err)
 	}
 
 	// 解析JSON响应
 	var weatherResp WeatherResponse
 	if err = json.Unmarshal(body, &weatherResp); err != nil {
-		return "", fmt.Errorf("解析天气数据失败: %v", err)
+		return "", false, fmt.Errorf("解析天气数据失败: %v", err)
 	}
 
 	// 检查API响应状态
 	if weatherResp.Status != "1" {
-		return "", fmt.Errorf("天气API返回错误: %s", weatherResp.Info)
+		return "", false, fmt.Errorf("天气API返回错误: %s", weatherResp.Info)
 	}
 
 	// 获取实时天气
 	url = fmt.Sprintf("https://restapi.amap.com/v3/weather/weatherInfo?key=%s&city=%s&extensions=base",
-		config.WeatherAPI.Key, config.WeatherAPI.CityCode)
+		config.WeatherAPI.Key, user.CityCode)
 
 	resp, err = http.Get(url)
 	if err != nil {
-		return "", fmt.Errorf("获取实时天气信息失败: %v", err)
+		return "", false, fmt.Errorf("获取实时天气信息失败: %v", err)
 	}
 	defer resp.Body.Close()
 
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("读取实时天气响应内容失败: %v", err)
+		return "", false, fmt.Errorf("读取实时天气响应内容失败: %v", err)
 	}
 
 	var liveWeatherResp WeatherResponse
 	if err := json.Unmarshal(body, &liveWeatherResp); err != nil {
-		return "", fmt.Errorf("解析实时天气数据失败: %v", err)
+		return "", false, fmt.Errorf("解析实时天气数据失败: %v", err)
 	}
 
 	// 格式化天气信息
 	var weatherText string
 
-	// 添加标题
-	weatherText += fmt.Sprintf("<at user_id=\"%s\">%s</at>【%s天气信息】\n\n", config.WeatherAPI.OpenID, config.WeatherAPI.SendName, config.WeatherAPI.CityName)
+	// 添加用户@信息
+	weatherText += fmt.Sprintf("<at user_id=\"%s\">%s</at> 今日%s天气预报\n\n", user.OpenID, user.SendName, user.CityName)
 
 	// 实时天气信息
 	if len(liveWeatherResp.Lives) > 0 {
@@ -197,14 +198,17 @@ func getAmapWeather() (string, error) {
 		}
 	}
 
+	// 检查是否有恶劣天气预警
+	hasWarning := shouldSendWarning(weatherText)
+
 	// 使用AI生成温馨提示
 	promptText, err := SendMoonshotChatRequest(weatherText)
 	if err != nil {
-		return "", err
+		return "", hasWarning, err
 	}
 	// 添加温馨提示
 	weatherText += promptText
-	return weatherText, nil
+	return weatherText, hasWarning, nil
 }
 
 // 发送Moonshot聊天请求
@@ -236,55 +240,95 @@ func shouldSendWarning(weatherText string) bool {
 	return contains(weatherText, warningKeywords)
 }
 
+// 发送消息到所有配置的飞书webhook
+func sendToAllFeishuWebhooks(message string) error {
+	if len(config.Feishu) == 0 {
+		fmt.Println("未配置飞书Webhook URL，跳过消息发送")
+		return nil
+	}
+
+	var errors []string
+	for i, webhookURL := range config.Feishu {
+		if webhookURL == "" {
+			continue
+		}
+		if err := feishu.SendStringToFeishu(webhookURL, message); err != nil {
+			errorMsg := fmt.Sprintf("发送到第%d个飞书Webhook失败: %v", i+1, err)
+			fmt.Println(errorMsg)
+			errors = append(errors, errorMsg)
+		} else {
+			fmt.Printf("消息已成功发送到第%d个飞书Webhook\n", i+1)
+		}
+	}
+
+	if len(errors) > 0 {
+		return fmt.Errorf("部分消息发送失败: %s", strings.Join(errors, "; "))
+	}
+	return nil
+}
+
 func main() {
-	// 定义命令行参数
-	configPath := flag.String("config", "config.json", "配置文件路径")
+	// 解析命令行参数
+	allWeather := flag.Bool("all", false, "强制发送天气信息，忽略时间检查和预警检测")
+	configFile := flag.String("config", "config.json", "配置文件路径")
 	flag.Parse()
 
-	// 如果配置文件路径不是绝对路径，则相对于程序所在目录
-	if !filepath.IsAbs(*configPath) {
-		execDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	// 读取配置文件
+	if err := loadConfig(*configFile); err != nil {
+		fmt.Printf("加载配置文件失败: %v\n", err)
+		os.Exit(1)
+	}
+
+	// 获取当前时间
+	now := time.Now()
+	currentHour := now.Hour()
+	currentMinute := now.Minute()
+
+	// 为每个用户检查时间并处理天气信息
+	for _, user := range config.Users {
+		// 如果不是强制执行，检查该用户的时间
+		if !*allWeather && !(user.Hour == currentHour && user.Minute == currentMinute) {
+			// 跳过不匹配时间的用户
+			continue
+		}
+
+		fmt.Printf("开始为%s获取天气信息...\n", user.SendName)
+
+		weatherText, hasWarning, err := getAmapWeather(user)
 		if err != nil {
-			fmt.Printf("获取程序目录失败: %v\n", err)
-			os.Exit(1)
+			fmt.Printf("获取%s的天气信息失败: %v\n", user.CityName, err)
+			continue
 		}
-		*configPath = filepath.Join(execDir, *configPath)
-	}
 
-	// 加载配置
-	if err := loadConfig(*configPath); err != nil {
-		fmt.Printf("加载配置失败: %v\n", err)
-		os.Exit(1)
-	}
+		fmt.Printf("%s的天气信息获取成功:\n%s\n", user.CityName, weatherText)
 
-	fmt.Printf("开始获取%s的天气信息...\n", config.WeatherAPI.CityName)
-
-	// 获取天气信息
-	weatherText, err := getWeather()
-	if err != nil {
-		fmt.Printf("获取天气信息失败: %v\n", err)
-		os.Exit(1)
-	}
-
-	fmt.Printf("天气信息获取成功:\n%s\n", weatherText)
-
-	// 检查是否需要发送预警
-	if shouldSendWarning(weatherText) {
-		fmt.Println("检测到恶劣天气，发送预警消息...")
-	} else {
-		fmt.Println("天气正常，发送日常天气信息...")
-	}
-
-	// 发送消息到飞书
-	if config.Feishu.WebhookURL != "" {
-		if err := feishu.SendStringToFeishu(config.Feishu.WebhookURL, weatherText); err != nil {
-			fmt.Printf("发送消息到飞书失败: %v\n", err)
-			os.Exit(1)
+		// 检查是否需要发送预警或强制发送
+		if *allWeather {
+			fmt.Printf("使用-all参数，强制发送%s的天气信息...\n", user.SendName)
+			sendWeather := true
+			if sendWeather {
+				if err := sendToAllFeishuWebhooks(weatherText); err != nil {
+					fmt.Printf("发送%s的消息到飞书失败: %v\n", user.SendName, err)
+				} else {
+					fmt.Printf("%s的天气信息发送成功\n", user.SendName)
+				}
+			}
+		} else if hasWarning {
+			fmt.Printf("检测到%s有恶劣天气，发送预警消息...\n", user.SendName)
+			if err := sendToAllFeishuWebhooks(weatherText); err != nil {
+				fmt.Printf("发送%s的预警消息到飞书失败: %v\n", user.SendName, err)
+			} else {
+				fmt.Printf("%s的预警消息发送成功\n", user.SendName)
+			}
+		} else {
+			fmt.Printf("%s天气正常，发送日常天气信息...\n", user.SendName)
+			if err := sendToAllFeishuWebhooks(weatherText); err != nil {
+				fmt.Printf("发送%s的消息到飞书失败: %v\n", user.SendName, err)
+			} else {
+				fmt.Printf("%s的天气信息发送成功\n", user.SendName)
+			}
 		}
-		fmt.Println("消息已成功发送到飞书")
-	} else {
-		fmt.Println("未配置飞书Webhook URL，跳过消息发送")
 	}
 
-	fmt.Println("天气预警检测任务完成")
+	fmt.Println("天气信息处理完成")
 }
