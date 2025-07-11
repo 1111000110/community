@@ -23,11 +23,13 @@ func NewRelationsServiceServer(svcCtx *svc.ServiceContext) *RelationsServiceServ
 	}
 }
 
+// UserRelationsUpdate 用户关系更新
 func (s *RelationsServiceServer) UserRelationsUpdate(ctx context.Context, in *__.UserRelationsUpdateReq) (*__.UserRelationsUpdateResp, error) {
 	l := relationsservicelogic.NewUserRelationsUpdateLogic(ctx, s.svcCtx)
 	return l.UserRelationsUpdate(in)
 }
 
+// UserRelationsGet 用户关系查询
 func (s *RelationsServiceServer) UserRelationsGet(ctx context.Context, in *__.UserRelationsGetReq) (*__.UserRelationsGetResp, error) {
 	l := relationsservicelogic.NewUserRelationsGetLogic(ctx, s.svcCtx)
 	return l.UserRelationsGet(in)

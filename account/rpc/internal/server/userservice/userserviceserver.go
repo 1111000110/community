@@ -23,26 +23,31 @@ func NewUserServiceServer(svcCtx *svc.ServiceContext) *UserServiceServer {
 	}
 }
 
+// UserLogin 用户登录
 func (s *UserServiceServer) UserLogin(ctx context.Context, in *__.UserLoginReq) (*__.UserLoginResp, error) {
 	l := userservicelogic.NewUserLoginLogic(ctx, s.svcCtx)
 	return l.UserLogin(in)
 }
 
+// UserRegister 用户注册
 func (s *UserServiceServer) UserRegister(ctx context.Context, in *__.UserRegisterReq) (*__.UserRegisterResp, error) {
 	l := userservicelogic.NewUserRegisterLogic(ctx, s.svcCtx)
 	return l.UserRegister(in)
 }
 
+// UserDelete 用户删除
 func (s *UserServiceServer) UserDelete(ctx context.Context, in *__.UserDeleteReq) (*__.UserDeleteResp, error) {
 	l := userservicelogic.NewUserDeleteLogic(ctx, s.svcCtx)
 	return l.UserDelete(in)
 }
 
+// UserUpdate 用户信息更新
 func (s *UserServiceServer) UserUpdate(ctx context.Context, in *__.UserUpdateReq) (*__.UserUpdateResp, error) {
 	l := userservicelogic.NewUserUpdateLogic(ctx, s.svcCtx)
 	return l.UserUpdate(in)
 }
 
+// UserQuery 用户信息查询
 func (s *UserServiceServer) UserQuery(ctx context.Context, in *__.UserQueryReq) (*__.UserQueryResp, error) {
 	l := userservicelogic.NewUserQueryLogic(ctx, s.svcCtx)
 	return l.UserQuery(in)

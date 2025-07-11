@@ -32,7 +32,9 @@ type (
 	UserUpdateResp          = __.UserUpdateResp
 
 	RelationsService interface {
+		// UserRelationsUpdate 用户关系更新
 		UserRelationsUpdate(ctx context.Context, in *UserRelationsUpdateReq, opts ...grpc.CallOption) (*UserRelationsUpdateResp, error)
+		// UserRelationsGet 用户关系查询
 		UserRelationsGet(ctx context.Context, in *UserRelationsGetReq, opts ...grpc.CallOption) (*UserRelationsGetResp, error)
 	}
 
@@ -47,11 +49,13 @@ func NewRelationsService(cli zrpc.Client) RelationsService {
 	}
 }
 
+// UserRelationsUpdate 用户关系更新
 func (m *defaultRelationsService) UserRelationsUpdate(ctx context.Context, in *UserRelationsUpdateReq, opts ...grpc.CallOption) (*UserRelationsUpdateResp, error) {
 	client := __.NewRelationsServiceClient(m.cli.Conn())
 	return client.UserRelationsUpdate(ctx, in, opts...)
 }
 
+// UserRelationsGet 用户关系查询
 func (m *defaultRelationsService) UserRelationsGet(ctx context.Context, in *UserRelationsGetReq, opts ...grpc.CallOption) (*UserRelationsGetResp, error) {
 	client := __.NewRelationsServiceClient(m.cli.Conn())
 	return client.UserRelationsGet(ctx, in, opts...)

@@ -32,10 +32,15 @@ type (
 	UserUpdateResp          = __.UserUpdateResp
 
 	UserService interface {
+		// UserLogin 用户登录
 		UserLogin(ctx context.Context, in *UserLoginReq, opts ...grpc.CallOption) (*UserLoginResp, error)
+		// UserRegister 用户注册
 		UserRegister(ctx context.Context, in *UserRegisterReq, opts ...grpc.CallOption) (*UserRegisterResp, error)
+		// UserDelete 用户删除
 		UserDelete(ctx context.Context, in *UserDeleteReq, opts ...grpc.CallOption) (*UserDeleteResp, error)
+		// UserUpdate 用户信息更新
 		UserUpdate(ctx context.Context, in *UserUpdateReq, opts ...grpc.CallOption) (*UserUpdateResp, error)
+		// UserQuery 用户信息查询
 		UserQuery(ctx context.Context, in *UserQueryReq, opts ...grpc.CallOption) (*UserQueryResp, error)
 	}
 
@@ -50,26 +55,31 @@ func NewUserService(cli zrpc.Client) UserService {
 	}
 }
 
+// UserLogin 用户登录
 func (m *defaultUserService) UserLogin(ctx context.Context, in *UserLoginReq, opts ...grpc.CallOption) (*UserLoginResp, error) {
 	client := __.NewUserServiceClient(m.cli.Conn())
 	return client.UserLogin(ctx, in, opts...)
 }
 
+// UserRegister 用户注册
 func (m *defaultUserService) UserRegister(ctx context.Context, in *UserRegisterReq, opts ...grpc.CallOption) (*UserRegisterResp, error) {
 	client := __.NewUserServiceClient(m.cli.Conn())
 	return client.UserRegister(ctx, in, opts...)
 }
 
+// UserDelete 用户删除
 func (m *defaultUserService) UserDelete(ctx context.Context, in *UserDeleteReq, opts ...grpc.CallOption) (*UserDeleteResp, error) {
 	client := __.NewUserServiceClient(m.cli.Conn())
 	return client.UserDelete(ctx, in, opts...)
 }
 
+// UserUpdate 用户信息更新
 func (m *defaultUserService) UserUpdate(ctx context.Context, in *UserUpdateReq, opts ...grpc.CallOption) (*UserUpdateResp, error) {
 	client := __.NewUserServiceClient(m.cli.Conn())
 	return client.UserUpdate(ctx, in, opts...)
 }
 
+// UserQuery 用户信息查询
 func (m *defaultUserService) UserQuery(ctx context.Context, in *UserQueryReq, opts ...grpc.CallOption) (*UserQueryResp, error) {
 	client := __.NewUserServiceClient(m.cli.Conn())
 	return client.UserQuery(ctx, in, opts...)
