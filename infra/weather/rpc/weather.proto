@@ -3,24 +3,33 @@ syntax = "proto3";
 package weather;
 
 option go_package = "./";
-// 天气增加关注城市请求
+
+// WeatherAddDataReq 天气数据添加请求消息
+// 用于添加用户的天气关注信息，包含用户信息、城市信息和天气数据
 message WeatherAddDataReq {
-  string UserName=1;
-  string OpenId=2;
-  string UserId=3;
-  string City=4;
-  string Time=5;
-  string MaxTemperature=6;
-  string MinTemperature=7;
-  repeated string Weather=8;
-  int64 Status=9;
+  string UserName = 1;        // 用户姓名，用于显示和通知
+  string OpenId = 2;          // 用户OpenID，用于飞书等第三方平台身份标识
+  string UserId = 3;          // 用户系统内部ID
+  string City = 4;            // 关注的城市名称，如"北京市朝阳区"
+  string Time = 5;            // 推送时间设置，格式如"08:00"
+  string MaxTemperature = 6;  // 当日最高温度，单位摄氏度
+  string MinTemperature = 7;  // 当日最低温度，单位摄氏度
+  repeated string Weather = 8; // 天气状况列表，如["晴", "多云", "小雨"]
+  int64 Status = 9;           // 数据状态：0-正常 1-禁用 2-删除
 }
 
-// 天气增加关注城市响应
-message WeatherAddDataResp {}
+// WeatherAddDataResp 天气数据添加响应消息
+// 添加天气数据的响应，通常为空表示操作成功
+message WeatherAddDataResp {
+  // 响应体为空，操作成功通过gRPC状态码表示
+}
 
-// 用户服务
+// WeatherService 天气服务
+// 提供天气数据的存储、查询和管理功能
 service WeatherService {
+  // WeatherAddData 添加天气数据
+  // 将用户的天气关注信息和当前天气数据存储到数据库
+  // 用于记录用户的天气订阅偏好和历史天气信息
   rpc WeatherAddData(WeatherAddDataReq) returns(WeatherAddDataResp);
 }
 

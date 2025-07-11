@@ -9,56 +9,74 @@ info (
 )
 
 type (
+	// UserBase 用户基本信息结构体
+	// 包含用户的公开信息，可以在用户列表、个人资料等场景中使用
 	UserBase { // 用户基本信息
-		UserId    int64  `json:"user_id"`
-		NickName  string `json:"nick_name"`
-		Avatar    string `json:"avatar"`
-		Gender    string `json:"gender"`
-		BirthDate int64  `json:"birthdate"`
+		UserId    int64  `json:"user_id"`    // 用户唯一标识ID
+		NickName  string `json:"nick_name"`  // 用户昵称，用于显示
+		Avatar    string `json:"avatar"`     // 用户头像URL地址
+		Gender    string `json:"gender"`     // 用户性别：male/female/unknown
+		BirthDate int64  `json:"birthdate"`  // 出生日期时间戳（毫秒）
 	}
+	// UserPrivate 用户私密信息结构体
+	// 包含用户的敏感信息，仅在特定场景下使用，需要严格的权限控制
 	UserPrivate { // 用户私密信息
-		UserId   int64  `json:"user_id"`
-		Phone    string `json:"phone"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
-		Role     string `json:"role"`
-		Status   int64  `json:"status"`
+		UserId   int64  `json:"user_id"`  // 用户唯一标识ID
+		Phone    string `json:"phone"`    // 用户手机号，用于登录和验证
+		Email    string `json:"email"`    // 用户邮箱地址
+		Password string `json:"password"` // 用户密码（加密后存储）
+		Role     string `json:"role"`     // 用户角色：admin/user/vip等
+		Status   int64  `json:"status"`   // 用户状态：0-正常 1-禁用 2-删除
 	}
+	// UserInfo 用户完整信息结构体
+	// 包含用户的基本信息和私密信息的组合
 	UserInfo { // 用户详情
-		UserBase    UserBase    `json:"user_base"`
-		UserPrivate UserPrivate `json:"user_private"`
+		UserBase    UserBase    `json:"user_base"`    // 用户基本信息
+		UserPrivate UserPrivate `json:"user_private"` // 用户私密信息
 	}
+	// Relations 用户关系结构体
+	// 定义用户之间的各种关系类型，如好友、关注、拉黑等
 	Relations { // 用户关系详情
-		RelationsId      int64 `json:"relations_id"`
-		UserId           int64 `json:"user_id"`
-		OtherId          int64 `json:"other_id"`
-		RelationshipType int64 `json:"relationship_type"`
+		RelationsId      int64 `json:"relations_id"`      // 关系记录唯一ID
+		UserId           int64 `json:"user_id"`           // 发起关系的用户ID
+		OtherId          int64 `json:"other_id"`          // 关系目标用户ID
+		RelationshipType int64 `json:"relationship_type"` // 关系类型：1-好友 2-关注 3-拉黑 4-屏蔽
 	}
 )
 
 type ( // 登录
+	// UserLoginReq 用户登录请求结构体
+	// 支持手机号或用户ID两种方式登录
 	UserLoginReq {
-		Phone    string `json:"phone"`
-		UserId   int64  `json:"userId"`
-		Password string `json:"password"`
+		Phone    string `json:"phone"`    // 手机号登录（推荐方式）
+		UserId   int64  `json:"userId"`   // 用户ID登录（备选方式）
+		Password string `json:"password"` // 用户密码，明文传输（建议HTTPS）
 	}
+	// UserLoginResp 用户登录响应结构体
+	// 返回JWT令牌用于后续API调用的身份验证
 	UserLoginResp {
-		Token string `json:"token"`
+		Token string `json:"token"` // JWT访问令牌，有效期见配置
 	}
 )
 
 type ( // 注册
+	// UserRegisterReq 用户注册请求结构体
+	// 新用户注册时需要提供的基本信息
 	UserRegisterReq {
-		Phone    string `json:"phone"`
-		Password string `json:"password"`
-		Role     string `json:"role"`
+		Phone    string `json:"phone"`    // 手机号，必须唯一，用作登录凭证
+		Password string `json:"password"` // 用户密码，建议8位以上包含字母数字
+		Role     string `json:"role"`     // 用户角色，默认为"user"
 	}
+	// UserRegisterResp 用户注册响应结构体
+	// 注册成功后返回令牌和用户ID，用户可直接登录
 	UserRegisterResp {
-		UserId int64  `json:"user_id"`
-		Token  string `json:"token"`
+		UserId int64  `json:"user_id"` // 新创建的用户ID
+		Token  string `json:"token"`   // JWT访问令牌，注册即登录
 	}
 )
 
+// 用户认证相关接口组
+// 包含登录、注册等无需JWT认证的公开接口
 @server (
 	group:      user // 登录
 	timeout:    3s // 超时时间
@@ -66,39 +84,57 @@ type ( // 注册
 	middleware: Middleware // 中间件
 )
 service account {
+	// 用户登录接口
+	// 支持手机号+密码登录，返回JWT令牌
 	@handler userLogin
 	post /user/login (UserLoginReq) returns (UserLoginResp)
 
+	// 用户注册接口
+	// 新用户注册，注册成功后自动登录返回令牌
 	@handler userRegister
 	post /user/register (UserRegisterReq) returns (UserRegisterResp)
 }
 
 type ( // 删除
+	// UserDeleteReq 用户删除请求结构体
+	// 支持通过手机号或用户ID删除账户，需要密码验证
 	UserDeleteReq {
 		Phone    string `json:"phone"` // 根据手机号删除用户
-		UserId   int64  `json:"user_id"`
-		Password string `json:"password"`
+		UserId   int64  `json:"user_id"`   // 要删除的用户ID
+		Password string `json:"password"` // 用户密码，用于身份验证
 	}
-	UserDeleteResp  {}
+	// UserDeleteResp 用户删除响应结构体
+	// 删除操作的响应，通常为空表示成功
+	UserDeleteResp  {} // 删除成功响应，空结构体
 )
 
 type ( // 修改
+	// UserUpdateReq 用户更新请求结构体
+	// 用于更新用户的基本信息，不包括敏感信息如密码
 	UserUpdateReq {
-		User UserBase `json:"user_base"`
+		User UserBase `json:"user_base"` // 包含更新字段的用户基本信息
 	}
-	UserUpdateResp  {}
+	// UserUpdateResp 用户更新响应结构体
+	// 更新操作的响应，通常为空表示成功
+	UserUpdateResp  {} // 更新成功响应，空结构体
 )
 
 type ( // 查询
+	// UserQueryReq 用户查询请求结构体
+	// 根据用户ID和查询类型获取用户信息
 	UserQueryReq {
-		QueryUserId int64  `json:"query_user_id"`
-		Type        string `json:"type"`
+		QueryUserId int64  `json:"query_user_id"` // 要查询的用户ID
+		Type        string `json:"type"`           // 查询类型："basic"-基本信息 "private"-私密信息
 	}
+	// UserQueryResp 用户查询响应结构体
+	// 根据查询类型返回对应的用户信息
 	UserQueryResp {
-		User UserInfo `json:"user_info"`
+		User UserInfo `json:"user_info"` // 用户信息，内容根据type参数决定
 	}
 )
 
+// 用户管理相关接口组
+// 需要JWT认证的用户管理接口，包含增删改查操作
 @server (
 	group:      user // 统一管理用户相关 API
 	timeout:    3s // 超时时间
@@ -107,37 +143,53 @@ type ( // 查询
 	jwt:        Auth // JWT 认证
 )
 service account {
+	// 用户删除接口
+	// 删除用户账户，需要密码验证，执行软删除
 	@handler userDelete
 	post /user/delete (UserDeleteReq) returns (UserDeleteResp)
 
+	// 用户信息更新接口
+	// 更新用户基本信息，如昵称、头像、性别等
 	@handler userUpdate
 	post /user/update (UserUpdateReq) returns (UserUpdateResp)
 
+	// 用户信息查询接口
+	// 根据用户ID和查询类型获取用户信息
 	@handler userQuery
 	post /user/query (UserQueryReq) returns (UserQueryResp)
 }
 
 type (
+	// UserRelationsUpdateReq 用户关系更新请求结构体
+	// 用于建立、修改或删除用户之间的关系
 	UserRelationsUpdateReq {
-		UserId           int64 `json:"user_id"`
-		OUserId          int64 `json:"o_user_id"`
-		relationshipType int64 `json:"relations"`
+		UserId           int64 `json:"user_id"`    // 发起操作的用户ID
+		OUserId          int64 `json:"o_user_id"`  // 目标用户ID
+		relationshipType int64 `json:"relations"`  // 关系类型：1-好友 2-关注 3-拉黑 4-屏蔽 0-删除关系
 	}
+	// UserRelationsUpdateResp 用户关系更新响应结构体
+	// 返回更新后的关系信息
 	UserRelationsUpdateResp {
-		Relations Relations `json:"relations"`
+		Relations Relations `json:"relations"` // 更新后的关系详细信息
 	}
 )
 
 type (
+	// UserRelationsGetReq 用户关系查询请求结构体
+	// 查询两个用户之间的关系状态
 	UserRelationsGetReq {
-		UserId  int64 `json:"user_id"`
-		OUserId int64 `json:"o_user_id"`
+		UserId  int64 `json:"user_id"`   // 查询发起用户ID
+		OUserId int64 `json:"o_user_id"` // 查询目标用户ID
 	}
+	// UserRelationsGetResp 用户关系查询响应结构体
+	// 返回两个用户之间的关系详情
 	UserRelationsGetResp {
-		Relations Relations `json:"relations"`
+		Relations Relations `json:"relations"` // 用户关系详细信息，如果无关系则为空
 	}
 )
 
+// 用户关系管理接口组
+// 需要JWT认证的用户关系管理接口，处理好友、关注等社交关系
 @server (
 	group:      relations // 统一管理用户相关 API
 	timeout:    3s // 超时时间
@@ -146,9 +198,13 @@ type (
 	jwt:        Auth // JWT 认证
 )
 service account {
+	// 用户关系更新接口
+	// 建立、修改或删除用户之间的关系（好友、关注、拉黑等）
 	@handler userRelationsUpdate
 	post /userRelations/update (UserRelationsUpdateReq) returns (UserRelationsUpdateResp)
 
+	// 用户关系查询接口
+	// 查询两个用户之间的关系状态和详细信息
 	@handler userRelationsGet
 	post /userRelations/get (UserRelationsGetReq) returns (UserRelationsGetResp)
 }

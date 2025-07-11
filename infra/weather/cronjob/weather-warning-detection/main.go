@@ -148,7 +148,8 @@ func getAmapWeather(user UserConfig) (string, bool, error) {
 	}
 
 	var liveWeatherResp WeatherResponse
-	if err := json.Unmarshal(body, &liveWeatherResp); err != nil {
+	var unmarshalErr error
+	if unmarshalErr = json.Unmarshal(body, &liveWeatherResp); unmarshalErr != nil {
 		return "", false, fmt.Errorf("解析实时天气数据失败: %v", err)
 	}
 
