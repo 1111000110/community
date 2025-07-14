@@ -4,20 +4,20 @@
 package types
 
 type Message struct {
-	GroupId    int64  `json:"groupId"`
-	MessageId  int64  `json:"messageId"`
-	FromUserId int64  `json:"fromUserId"`
-	ToUserId   int64  `json:"toUserId"`
-	Text       string `json:"text"`
-	CreateDate int64  `json:"createDate"`
+	GroupId    int64  `json:"groupId"`    // 群组ID，0表示私聊，>0表示群聊
+	MessageId  int64  `json:"messageId"`  // 消息唯一标识ID
+	FromUserId int64  `json:"fromUserId"` // 发送者用户ID
+	ToUserId   int64  `json:"toUserId"`   // 接收者用户ID（私聊时使用）
+	Text       string `json:"text"`       // 消息文本内容
+	CreateDate int64  `json:"createDate"` // 消息创建时间戳（毫秒）
 }
 
 type MessageReciveReq struct {
-	MessageId int64 `json:"messageId"`
-	UserId    int64 `json:"userId"`
-	Limit     int64 `json:"limit"`
+	MessageId int64 `json:"messageId"` // 起始消息ID，用于分页（获取此ID之前的消息）
+	UserId    int64 `json:"userId"`    // 请求用户ID，用于权限验证
+	Limit     int64 `json:"limit"`     // 获取消息数量限制，建议不超过50条
 }
 
 type MessageReciveResp struct {
-	Message map[int64][]Message `json:"message"`
+	Message map[int64][]Message `json:"message"` // 按群组ID分组的消息列表，key为群组ID，value为消息数组
 }

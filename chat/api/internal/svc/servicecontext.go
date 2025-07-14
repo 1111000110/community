@@ -1,10 +1,10 @@
 package svc
 
 import (
-	"community.com/chat/internal/config"
-	"community.com/chat/internal/hub"
-	"community.com/chat/internal/middleware"
-	"community.com/chat/internal/types"
+	"community.com/chat/api/internal/config"
+	"community.com/chat/api/internal/hub"
+	"community.com/chat/api/internal/middleware"
+	"community.com/chat/api/internal/types"
 	"context"
 	"encoding/json"
 	"fmt"

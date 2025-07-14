@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	chat "community.com/chat/internal/handler/chat"
-	"community.com/chat/internal/svc"
+	chat "community.com/chat/api/internal/handler/chat"
+	"community.com/chat/api/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
 )

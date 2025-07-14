@@ -2,11 +2,11 @@ type (
 	// Message 消息结构体
 	// 定义聊天消息的基本结构，支持单聊和群聊两种模式
 	Message {
-		GroupId    int64  `json:"groupId"`    // 群组ID，0表示私聊，>0表示群聊
-		MessageId  int64  `json:"messageId"`  // 消息唯一标识ID
+		GroupId    int64  `json:"groupId"` // 群组ID，0表示私聊，>0表示群聊
+		MessageId  int64  `json:"messageId"` // 消息唯一标识ID
 		FromUserId int64  `json:"fromUserId"` // 发送者用户ID
-		ToUserId   int64  `json:"toUserId"`   // 接收者用户ID（私聊时使用）
-		Text       string `json:"text"`       // 消息文本内容
+		ToUserId   int64  `json:"toUserId"` // 接收者用户ID（私聊时使用）
+		Text       string `json:"text"` // 消息文本内容
 		CreateDate int64  `json:"createDate"` // 消息创建时间戳（毫秒）
 	}
 )
@@ -16,8 +16,8 @@ type (
 	// 用于上拉刷新获取历史消息，支持分页查询
 	MessageReciveReq {
 		MessageId int64 `json:"messageId"` // 起始消息ID，用于分页（获取此ID之前的消息）
-		UserId    int64 `json:"userId"`    // 请求用户ID，用于权限验证
-		Limit     int64 `json:"limit"`     // 获取消息数量限制，建议不超过50条
+		UserId    int64 `json:"userId"` // 请求用户ID，用于权限验证
+		Limit     int64 `json:"limit"` // 获取消息数量限制，建议不超过50条
 	}
 	// MessageReciveResp 消息接收响应结构体
 	// 返回按群组分类的消息列表，便于前端渲染
@@ -37,10 +37,10 @@ type (
 // 聊天服务接口组
 // 提供WebSocket实时通讯服务，支持单聊和群聊功能
 @server (
-	group:      chat        // 接口分组：聊天服务
-	timeout:    3s          // 请求超时时间：3秒
-	maxBytes:   1048576     // 最大请求体大小：1MB
-	middleware: Middleware  // 应用中间件：CORS、认证、日志等
+	group:      chat // 接口分组：聊天服务
+	timeout:    3s // 请求超时时间：3秒
+	maxBytes:   1048576 // 最大请求体大小：1MB
+	middleware: Middleware // 应用中间件：CORS、认证、日志等
 )
 service chat {
 	// chatClient WebSocket连接接口

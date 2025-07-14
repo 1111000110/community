@@ -1,9 +1,9 @@
 package main
 
 import (
-	"community.com/chat/internal/config"
-	"community.com/chat/internal/handler"
-	"community.com/chat/internal/svc"
+	"community.com/chat/api/internal/config"
+	"community.com/chat/api/internal/handler"
+	"community.com/chat/api/internal/svc"
 	"flag"
 	"fmt"
 	"github.com/zeromicro/go-zero/core/logx"

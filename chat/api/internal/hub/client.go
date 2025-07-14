@@ -1,6 +1,6 @@
 package hub
 
-import "community.com/chat/internal/types"
+import "community.com/chat/api/internal/types"
 
 type Client interface {
 	GetClientId() int64

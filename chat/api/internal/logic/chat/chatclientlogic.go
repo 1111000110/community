@@ -1,8 +1,8 @@
 package chat
 
 import (
-	"community.com/chat/internal/svc"
-	"community.com/chat/internal/types"
+	"community.com/chat/api/internal/svc"
+	"community.com/chat/api/internal/types"
 	"context"
 	"encoding/json"
 	"fmt"

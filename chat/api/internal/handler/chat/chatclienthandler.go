@@ -1,14 +1,14 @@
 package chat
 
 import (
-	"community.com/chat/internal/types"
+	"community.com/chat/api/internal/types"
 	"community.com/pkg/message"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 
-	"community.com/chat/internal/logic/chat"
-	"community.com/chat/internal/svc"
+	"community.com/chat/api/internal/logic/chat"
+	"community.com/chat/api/internal/svc"
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 

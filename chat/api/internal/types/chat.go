@@ -4,5 +4,5 @@
 package types
 
 type MessageClientReq struct {
-	UserId int64 `form:"userId"`
+	UserId int64 `form:"userId"` // 用户ID，用于建立WebSocket连接和身份验证
 }

@@ -1,7 +1,7 @@
 package hub
 
 import (
-	"community.com/chat/internal/types"
+	"community.com/chat/api/internal/types"
 	"fmt"
 	"time"
 )

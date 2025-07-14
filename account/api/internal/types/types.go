@@ -4,30 +4,30 @@
 package types
 
 type Relations struct {
-	RelationsId      int64 `json:"relations_id"`
-	UserId           int64 `json:"user_id"`
-	OtherId          int64 `json:"other_id"`
-	RelationshipType int64 `json:"relationship_type"`
+	RelationsId      int64 `json:"relations_id"`      // 关系记录唯一ID
+	UserId           int64 `json:"user_id"`           // 发起关系的用户ID
+	OtherId          int64 `json:"other_id"`          // 关系目标用户ID
+	RelationshipType int64 `json:"relationship_type"` // 关系类型：1-好友 2-关注 3-拉黑 4-屏蔽
 }
 
 type UserBase struct {
-	UserId    int64  `json:"user_id"`
-	NickName  string `json:"nick_name"`
-	Avatar    string `json:"avatar"`
-	Gender    string `json:"gender"`
-	BirthDate int64  `json:"birthdate"`
+	UserId    int64  `json:"user_id"`   // 用户唯一标识ID
+	NickName  string `json:"nick_name"` // 用户昵称，用于显示
+	Avatar    string `json:"avatar"`    // 用户头像URL地址
+	Gender    string `json:"gender"`    // 用户性别：male/female/unknown
+	BirthDate int64  `json:"birthdate"` // 出生日期时间戳（毫秒）
 }
 
 type UserInfo struct {
-	UserBase    UserBase    `json:"user_base"`
-	UserPrivate UserPrivate `json:"user_private"`
+	UserBase    UserBase    `json:"user_base"`    // 用户基本信息
+	UserPrivate UserPrivate `json:"user_private"` // 用户私密信息
 }
 
 type UserPrivate struct {
-	UserId   int64  `json:"user_id"`
-	Phone    string `json:"phone"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Role     string `json:"role"`
-	Status   int64  `json:"status"`
+	UserId   int64  `json:"user_id"`  // 用户唯一标识ID
+	Phone    string `json:"phone"`    // 用户手机号，用于登录和验证
+	Email    string `json:"email"`    // 用户邮箱地址
+	Password string `json:"password"` // 用户密码（加密后存储）
+	Role     string `json:"role"`     // 用户角色：admin/user/vip等
+	Status   int64  `json:"status"`   // 用户状态：0-正常 1-禁用 2-删除
 }
