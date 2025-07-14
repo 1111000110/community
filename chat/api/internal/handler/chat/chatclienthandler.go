@@ -13,7 +13,7 @@ import (
 )
 
 // 定义 WebSocket 升级器
-var upgrader = websocket.Upgrader{
+var upGrader = websocket.Upgrader{
 	ReadBufferSize:  1024, // 设置读取缓冲区大小
 	WriteBufferSize: 1024, // 设置写入缓冲区大小
 	CheckOrigin: func(r *http.Request) bool {
@@ -28,7 +28,7 @@ func ChatClientHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			httpx.ErrorCtx(r.Context(), w, err)
 			return
 		}
-		conn, err := upgrader.Upgrade(w, r, nil) //升级Http为websocket
+		conn, err := upGrader.Upgrade(w, r, nil) //升级Http为websocket
 		if err != nil {
 			log.Println(err)
 			return

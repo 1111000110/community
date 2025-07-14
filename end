@@ -15,11 +15,11 @@ echo "etcd stopped."
 
 # 停止 user-rpc 和 user-api
 echo "Stopping userRpc..."
-pkill account-api
+pkill user-api
 echo "userRpc stopped."
 
 echo "Stopping userApi..."
-pkill account-rpc
+pkill user-rpc
 echo "userApi stopped."
 
 # 清理日志文件（可选）
@@ -27,10 +27,10 @@ echo "Cleaning log files..."
 rm -f etcd.log
 rm -rf etcd-data
 echo "Log files cleaned."
-cd account/api || exit
-rm -rf account-api account-api.log
+cd user/api || exit
+rm -rf user-api user-api.log
 cd ../../
-cd account/rpc || exit
-rm -rf account-rpc account-rpc.log
+cd user/rpc || exit
+rm -rf user-rpc user-rpc.log
 cd ../../
 echo "All services stopped and resources cleaned."

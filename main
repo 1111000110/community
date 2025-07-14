@@ -31,15 +31,15 @@ if ! nc -z 127.0.0.1 2379; then
 fi
 
 # 编译并运行 user-rpc
-cd account/rpc || exit
-go build -o account-rpc account.go
-./account-rpc > account-rpc.log 2>&1 &
+cd user/rpc || exit
+go build -o user-rpc user.go
+./user-rpc > user-rpc.log 2>&1 &
 cd ../../
 
 # 编译并运行 user-api
-cd account/api || exit
-go build -o account-api account.go
-./account-api > account-api.log 2>&1 &
+cd user/api || exit
+go build -o user-api user.go
+./user-api > user-api.log 2>&1 &
 cd ../../
 
 echo "All services started successfully."
