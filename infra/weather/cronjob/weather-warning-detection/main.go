@@ -158,12 +158,13 @@ func getAmapWeather(user UserConfig) (string, bool, error) {
 
 	// 添加用户@信息
 	weatherText += fmt.Sprintf("<at user_id=\"%s\">%s</at> 今日%s天气预报\n\n", user.OpenID, user.SendName, user.CityName)
-
+	hasWarning := false
 	// 实时天气信息
 	if len(liveWeatherResp.Lives) > 0 {
 		live := liveWeatherResp.Lives[0]
 		weatherText += "【实时天气】\n"
 		weatherText += fmt.Sprintf("天气: %s\n", live.Weather)
+		hasWarning = shouldSendWarning(live.Weather) // 检查是否有恶劣天气预警
 		weatherText += fmt.Sprintf("温度: %s℃\n", live.Temperature)
 		weatherText += fmt.Sprintf("风向: %s\n", live.WindDirection)
 		weatherText += fmt.Sprintf("风力: %s级\n", live.WindPower)
@@ -198,9 +199,6 @@ func getAmapWeather(user UserConfig) (string, bool, error) {
 				tomorrow.NightWeather, tomorrow.NightTemp, tomorrow.NightWind, tomorrow.NightPower)
 		}
 	}
-
-	// 检查是否有恶劣天气预警
-	hasWarning := shouldSendWarning(weatherText)
 
 	// 使用AI生成温馨提示
 	promptText, err := SendMoonshotChatRequest(weatherText)
@@ -314,7 +312,8 @@ func main() {
 					fmt.Printf("%s的天气信息发送成功\n", user.SendName)
 				}
 			}
-		} else if hasWarning {
+		}
+		if hasWarning {
 			fmt.Printf("检测到%s有恶劣天气，发送预警消息...\n", user.SendName)
 			if err := sendToAllFeishuWebhooks(weatherText); err != nil {
 				fmt.Printf("发送%s的预警消息到飞书失败: %v\n", user.SendName, err)
@@ -322,12 +321,7 @@ func main() {
 				fmt.Printf("%s的预警消息发送成功\n", user.SendName)
 			}
 		} else {
-			fmt.Printf("%s天气正常，发送日常天气信息...\n", user.SendName)
-			if err := sendToAllFeishuWebhooks(weatherText); err != nil {
-				fmt.Printf("发送%s的消息到飞书失败: %v\n", user.SendName, err)
-			} else {
-				fmt.Printf("%s的天气信息发送成功\n", user.SendName)
-			}
+			fmt.Printf("%s天气正常，不发送天气信息...\n", user.SendName)
 		}
 	}
 
