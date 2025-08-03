@@ -15,8 +15,11 @@ type CustomClaims struct {
 	jwt.RegisteredClaims
 }
 
+var DefaultDuration = time.Hour * 24
+var DefaultSecretKey = "ZhangXuan666"
+
 // 通用Token生成函数
-func CreateToken(userID int64, duration time.Duration, SecretKey string) (string, error) {
+func CreateTokenByAll(userID int64, duration time.Duration, SecretKey string) (string, error) {
 	claims := CustomClaims{
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -26,6 +29,18 @@ func CreateToken(userID int64, duration time.Duration, SecretKey string) (string
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(SecretKey)) // 将 SecretKey 转换为 []byte
+}
+
+func CreateTokenByUserID(userID int64) (string, error) {
+	claims := CustomClaims{
+		UserID: userID,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(DefaultDuration)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(DefaultSecretKey)) // 将 SecretKey 转换为 []byte
 }
 
 func GetUserId(ctx context.Context) (int64, error) {

@@ -1,0 +1,11 @@
+Name: Post
+Host: 0.0.0.0
+Port: 8890
+Auth:
+  AccessSecret: "ZhangXuan666"
+  AccessExpire:  86400
+PostRpcConf:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: post.rpc

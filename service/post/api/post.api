@@ -1,0 +1,155 @@
+syntax = "v1"
+
+info (
+	title:   "帖子模块"
+	desc:    "帖子模块"
+	author:  "张璇"
+	email:   "xatuzx2025@163.com"
+	version: "1.0"
+)
+
+type (
+	// PostBase 帖子基本信息
+	PostBase {
+		PostId     int64  `json:"post_id"` // 帖子ID
+		UserId     int64  `json:"user_id"` // 发布者ID
+		Title      string `json:"title"` // 标题
+		Content    string `json:"content"` // 内容
+		Images     string `json:"images"` // 图片列表
+		Theme      string `json:"theme"` // 主题
+		Tags       string `json:"tags"` // 标签
+		Status     int32  `json:"status"` // 状态
+		CreateTime int64  `json:"create_time"` // 创建时间
+		UpdateTime int64  `json:"update_time"` // 更新时间
+	}
+	// PostStats 帖子统计信息
+	PostStats {
+		PostId       int64 `json:"post_id"` // 帖子ID
+		LikeCount    int64 `json:"like_count"` // 点赞数
+		ShareCount   int64 `json:"share_count"` // 分享数
+		ViewCount    int64 `json:"view_count"` // 浏览数
+		CollectCount int64 `json:"collect_count"` // 收藏数
+	}
+	// PostDetail 帖子详细信息
+	PostDetail {
+		PostBase    PostBase   `json:"post_base"` // 基本信息
+		PostStats   PostStats  `json:"post_stats"` // 统计信息
+		Author      PostAuthor `json:"author"` // 作者信息
+		IsLiked     bool       `json:"is_liked"` // 是否已点赞
+		IsCollected bool       `json:"is_collected"` // 是否已收藏
+	}
+	// PostAuthor 帖子作者信息
+	PostAuthor {
+		UserId   int64  `json:"user_id"` // 用户ID
+		NickName string `json:"nick_name"` // 昵称
+		Avatar   string `json:"avatar"` // 头像
+	}
+)
+
+type (
+	// PostCreateReq 创建帖子
+	PostCreateReq {
+		Title   string `json:"title"` // 标题
+		Content string `json:"content"` // 内容
+		Images  string `json:"images"` // 图片列表
+		Theme   string `json:"theme"` // 主题
+		Tags    string `json:"tags"` // 标签
+		Status  int32  `json:"status"` // 状态
+	}
+	// PostCreateResp 创建帖子响应
+	PostCreateResp {
+		PostId int64 `json:"post_id"` // 帖子ID
+	}
+)
+
+type (
+	// PostDeleteReq 删除帖子
+	PostDeleteReq {
+		PostId int64 `json:"post_id"` // 帖子ID
+	}
+	// PostDeleteResp 删除帖子响应
+	PostDeleteResp  {}
+)
+
+type (
+	// PostUpdateReq 更新帖子
+	PostUpdateReq {
+		PostId  int64  `json:"post_id"` // 帖子ID
+		Title   string `json:"title"` // 标题
+		Content string `json:"content"` // 内容
+		Images  string `json:"images"` // 图片列表
+		Theme   string `json:"theme"` // 主题
+		Tags    string `json:"tags"` // 标签
+		Status  int32  `json:"status"` // 状态
+	}
+	// PostUpdateResp 更新帖子响应
+	PostUpdateResp  {}
+)
+
+type (
+	// PostDetailReq 获取帖子详情
+	PostDetailReq {
+		PostId int64 `json:"post_id"` // 帖子ID
+	}
+	// PostDetailResp 获取帖子详情响应
+	PostDetailResp {
+		Post PostDetail `json:"post"` // 帖子信息
+	}
+)
+
+type (
+	// PostListReq 获取帖子列表
+	PostListReq {
+		Page     int64  `json:"page"` // 页码
+		PageSize int64  `json:"page_size"` // 每页数量
+		Theme    string `json:"theme"` // 主题筛选
+		UserId   int64  `json:"user_id"` // 用户ID筛选
+		Keyword  string `json:"keyword"` // 关键词搜索
+		SortBy   string `json:"sort_by"` // 排序方式
+	}
+	// PostListResp 获取帖子列表响应
+	PostListResp {
+		Posts    []PostDetail `json:"posts"` // 帖子列表
+		Total    int64        `json:"total"` // 总数量
+		Page     int64        `json:"page"` // 当前页码
+		PageSize int64        `json:"page_size"` // 每页数量
+	}
+)
+
+@server (
+	group:      Post // 目录分组
+	timeout:    5s // 超时时间
+	maxBytes:   10485760 // 最大字节数
+	middleware: Middleware // 使用中间件
+	jwt:        Auth // 使用令牌
+)
+service Post {
+	// 创建帖子
+	@handler postCreate
+	post /post/create (PostCreateReq) returns (PostCreateResp)
+
+	// 删除帖子
+	@handler postDelete
+	post /post/delete (PostDeleteReq) returns (PostDeleteResp)
+
+	// 更新帖子
+	@handler postUpdate
+	post /post/update (PostUpdateReq) returns (PostUpdateResp)
+}
+
+@server (
+	group:      Public
+	timeout:    5s
+	maxBytes:   1048576
+	middleware: Middleware
+)
+service Post {
+	// 获取帖子列表
+	@handler PostList
+	post /post/list (PostListReq) returns (PostListResp)
+
+	// 获取帖子详情
+	@handler PostDetail
+	post /post/detail (PostDetailReq) returns (PostDetailResp)
+}
+

@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package post;
+
+option go_package = "./";
+
+// 帖子服务
+service PostService {
+  rpc PostCreate (PostCreateReq) returns(PostCreateResp);// 创建帖子
+  rpc PostDelete (PostDeleteReq) returns(PostDeleteResp);// 删除帖子
+  rpc PostUpdate (PostUpdateReq) returns(PostUpdateResp);// 更新帖子
+  rpc PostDetail (PostDetailReq) returns(PostDetailResp);// 帖子详情
+  rpc PostList (PostListReq) returns (PostListResp);// 帖子列表
+}
+
+
+
+// Post 帖子结构
+message Post {
+  int64 PostId = 1;    // 帖子ID
+  int64 UserId = 2;    // 用户ID
+  string Title = 3;    // 标题
+  string Content =4;   // 内容
+  string Images =5;    // 图片
+  string Theme =6;     // 主题
+  string Tags =7;      // 标签
+  int32 Status =8;     // 状态
+  int64 CreateTime =9; // 创建时间
+  int64 UpdateTime =10;// 更新时间
+}
+
+message PostCreateReq{
+  Post Post =1;
+}
+
+message PostCreateResp{
+  int64 PostId=1;
+}
+
+message PostDeleteReq{
+  int64 PostId=1;
+}
+
+message PostUpdateReq{
+  Post Post =1;
+}
+
+message PostUpdateResp{
+  int64 PostId=1;
+}
+
+message PostDeleteResp{
+
+}
+
+message PostDetailReq{
+  int64 PostId=1;
+}
+
+message PostDetailResp{
+  Post Post =1;
+}
+
+message PostListReq{
+  repeated int64  PostIds=1;
+}
+message PostListResp{
+  repeated Post Posts =1;
+}
+
+

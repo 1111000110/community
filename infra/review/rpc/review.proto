@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package review;
+
+option go_package = "./";
+message Review{
+  int64 ReviewId=1;
+  int64 UserId=2;
+  int64 BaseId=3;
+  int64 RootId=4;
+  int64 HeadId=5;
+  string Text=6;
+  int64 Status=7;
+  int64 Level=8;
+  int64 RootCommentCount=9;
+  int64 CreateAt=10;
+  int64 UpdateAt=11;
+  int64 Like=12;
+  int64 DisLike=13;
+}
+message ReviewGetByBaseIdReq{
+  int64 BaseId=1;
+  int64 HeadId=2;
+  int64 Offset=3;
+  int64 Limit=4;
+}
+message ReviewGetByRootIdReq{
+  int64 RootId=1;
+  int64 HeadId=2;
+  int64 Offset=3;
+  int64 Limit=4;
+}
+message ReviewGetResp{
+  repeated Review Review=1;
+}
+message ReviewCreateReq{
+  repeated Review Review=1;
+}
+message ReviewCreateResp{
+  int64 Count=1;
+}
+message ReviewDeleteReq{
+  repeated Review Review=1;
+}
+message ReviewDeleteByHeadIdReq{
+  repeated int64 HeadId=1;
+}
+message ReviewDeleteResp{
+  int64 Count=1;
+}
+service ReviewService {
+  rpc ReviewCreate (ReviewCreateReq) returns (ReviewCreateResp);
+  rpc ReviewDelete (ReviewDeleteReq) returns (ReviewDeleteResp);
+  rpc ReviewDeleteByHeadId (ReviewDeleteByHeadIdReq) returns (ReviewDeleteResp);
+  rpc ReviewGetByBaseId (ReviewGetByBaseIdReq) returns (ReviewGetResp);
+  rpc ReviewGetByRootId (ReviewGetByRootIdReq) returns(ReviewGetResp);
+}

@@ -1,0 +1,19 @@
+Name: review.rpc
+ListenOn: 0.0.0.0:8080
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: review.rpc
+DB:
+  Review:
+  - Url: mongodb://admin:admin123@localhost:27017/?authSource=admin
+    Db: review
+    Collection: review1
+  - Url: mongodb://admin:admin123@localhost:27017/?authSource=admin
+    Db: review
+    Collection: review2
+  - Url: mongodb://admin:admin123@localhost:27017/?authSource=admin
+    Db: review
+    Collection: review3
+RedisConf:
+  Host: localhost:6379
