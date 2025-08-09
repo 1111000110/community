@@ -1,10 +1,9 @@
 package user
 
 import (
-	"context"
-
 	"community.com/service/user/api/internal/svc"
 	"community.com/service/user/api/internal/types"
+	"context"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -25,6 +24,5 @@ func NewUserDeleteLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UserDe
 
 func (l *UserDeleteLogic) UserDelete(req *types.UserDeleteReq) (resp *types.UserDeleteResp, err error) {
 	// todo: add your logic here and delete this line
-
 	return
 }

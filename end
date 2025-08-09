@@ -13,24 +13,47 @@ echo "Stopping etcd..."
 pkill etcd
 echo "etcd stopped."
 
-# 停止 user-rpc 和 user-api
-echo "Stopping userRpc..."
-pkill user-api
-echo "userRpc stopped."
 
-echo "Stopping userApi..."
-pkill user-rpc
-echo "userApi stopped."
+# 停止服务进程函数
+stop_service() {
+    local service_name=$1
+    echo "Stopping $service_name..."
+    pkill "$service_name" 2>/dev/null && echo "$service_name stopped." || echo "$service_name not running."
+}
 
-# 清理日志文件（可选）
-echo "Cleaning log files..."
-rm -f etcd.log
-rm -rf etcd-data
-echo "Log files cleaned."
-cd user/api || exit
-rm -rf user-api user-api.log
-cd ../../
-cd user/rpc || exit
-rm -rf user-rpc user-rpc.log
-cd ../../
+# 删除文件函数，传目录和可执行文件名
+clean_service() {
+    local service_path=$1
+    local dir_name=$(basename "$service_path")
+    local parent_dir=$(basename "$(dirname "$service_path")")
+    local service_name="${parent_dir}-${dir_name}"
+
+    echo "Cleaning logs and binaries for $service_name in $service_path"
+
+    pkill "$service_name" 2>/dev/null
+
+    # 删除日志和二进制文件
+    rm -f etcd.log
+    rm -rf etcd-data
+
+    if [[ -d "$service_path" ]]; then
+        rm -f "$service_path/$service_name" "$service_path/../$service_name.log"
+        echo "Cleaned $service_path/$service_name and logs."
+    else
+        echo "Directory $service_path does not exist."
+    fi
+}
+
+# 停止对应进程（按实际进程名停止）
+stop_service user-rpc
+stop_service user-api
+stop_service post-rpc
+stop_service post-api
+
+# 清理日志和二进制
+clean_service "service/user/api"
+clean_service "service/user/rpc"
+clean_service "service/post/api"
+clean_service "service/post/rpc"
+
 echo "All services stopped and resources cleaned."

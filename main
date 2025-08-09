@@ -30,16 +30,33 @@ if ! nc -z 127.0.0.1 2379; then
     exit 1
 fi
 
-# 编译并运行 user-rpc
-cd user/rpc || exit
-go build -o user-rpc user.go
-./user-rpc > user-rpc.log 2>&1 &
-cd ../../
+# 编译并运行服务函数
+run_service() {
+    local service_path=$1
+    # 取路径最后两级目录作为服务名，比如 stevice/user/rpc -> user-rpc
+    local dir_name=$(basename "$service_path")
+    local parent_dir=$(basename "$(dirname "$service_path")")
+    local service_name="${parent_dir}-${dir_name}"
+    echo "Building and starting service: $service_name in $service_path"
 
-# 编译并运行 user-api
-cd user/api || exit
-go build -o user-api user.go
-./user-api > user-api.log 2>&1 &
-cd ../../
+    cd "$service_path" || { echo "Failed to cd to $service_path"; exit 1; }
+
+    # 找到当前目录下的 go 源码文件（假设只有一个 *.go 文件，比如 user.go 或 post.go）
+    local go_file=$(ls *.go 2>/dev/null | head -n1)
+    if [[ -z "$go_file" ]]; then
+        echo "No go file found in $service_path"
+        exit 1
+    fi
+
+    go build -o "$service_name" "$go_file"
+    ./"$service_name" > "../$service_name.log" 2>&1 &
+    cd - >/dev/null || exit
+}
+
+# 依次启动你的服务，传入路径即可
+run_service "service/user/rpc"
+run_service "service/user/api"
+run_service "service/post/rpc"
+run_service "service/post/api"
 
 echo "All services started successfully."

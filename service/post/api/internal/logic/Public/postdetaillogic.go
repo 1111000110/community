@@ -1,6 +1,8 @@
 package Public
 
 import (
+	"community.com/service/post/rpc/postservice"
+	"community.com/service/user/rpc/client/userservice"
 	"context"
 
 	"community.com/service/post/api/internal/svc"
@@ -24,7 +26,38 @@ func NewPostDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PostDe
 }
 
 func (l *PostDetailLogic) PostDetail(req *types.PostDetailReq) (resp *types.PostDetailResp, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	data, err := l.svcCtx.RpcClient.PostClient.PostDetail(l.ctx, &postservice.PostDetailReq{
+		PostId: req.PostId,
+	})
+	if err != nil {
+		return resp, err
+	}
+	userData, err := l.svcCtx.RpcClient.UserClient.UserQuery(l.ctx, &userservice.UserQueryReq{
+		UserId: data.GetPost().GetUserId(),
+		Type:   userservice.GetPublicInfo,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &types.PostDetailResp{
+		Post: types.PostDetail{
+			PostBase: types.PostBase{
+				PostId:     data.GetPost().GetPostId(),
+				UserId:     data.GetPost().GetUserId(),
+				Title:      data.GetPost().GetTitle(),
+				Content:    data.GetPost().GetContent(),
+				Images:     data.GetPost().GetImages(),
+				Theme:      data.GetPost().GetTheme(),
+				Tags:       data.GetPost().GetTags(),
+				Status:     data.GetPost().GetStatus(),
+				CreateTime: data.GetPost().GetCreateTime(),
+				UpdateTime: data.GetPost().GetUpdateTime(),
+			},
+			Author: types.PostAuthor{
+				UserId:   userData.GetUser().GetUserId(),
+				NickName: userData.GetUser().GetNickname(),
+				Avatar:   userData.GetUser().GetAvatar(),
+			},
+		},
+	}, nil
 }

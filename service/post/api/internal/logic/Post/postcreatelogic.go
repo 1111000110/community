@@ -28,7 +28,7 @@ func NewPostCreateLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PostCr
 
 func (l *PostCreateLogic) PostCreate(req *types.PostCreateReq) (resp *types.PostCreateResp, err error) {
 	userId, err := tool.GetUserId(l.ctx)
-	postCreateResp, err := l.svcCtx.RpcClient.UserServiceClient.PostCreate(l.ctx, &postservice.PostCreateReq{
+	postCreateResp, err := l.svcCtx.RpcClient.PostClient.PostCreate(l.ctx, &postservice.PostCreateReq{
 		Post: &postservice.Post{
 			PostId:     0,
 			UserId:     userId,
