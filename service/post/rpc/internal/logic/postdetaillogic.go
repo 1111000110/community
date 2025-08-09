@@ -27,6 +27,6 @@ func NewPostDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PostDe
 func (l *PostDetailLogic) PostDetail(in *__.PostDetailReq) (*__.PostDetailResp, error) {
 	post, err := l.svcCtx.PostMongoClient.FindOneByPostId(l.ctx, in.GetPostId())
 	return &__.PostDetailResp{
-		Post: model.ModelPostToPost(post),
+		Post: model.ModelPostToRpcPost(post),
 	}, err
 }

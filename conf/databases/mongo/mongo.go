@@ -1,7 +1,6 @@
 package mongo
 
 import (
-	"flag"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/mon"
@@ -15,12 +14,11 @@ type MongoConfig struct {
 	Db        string
 }
 
-var configFile = flag.String("f", "conf.yaml", "the config file")
+var configFile = "/Users/zhangxuan/Data/work/xuan/community/conf/conf.yaml"
 var c Config
 
 func init() {
-	flag.Parse()
-	conf.MustLoad(*configFile, &c)
+	conf.MustLoad(configFile, &c)
 }
 
 func GetMongoCommunityClient(collection string) *mon.Model { // mongo的可生产文件会依赖此函数，尽量不要修改位置

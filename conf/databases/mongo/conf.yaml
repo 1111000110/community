@@ -1,3 +1,0 @@
-MongoCong:
-  Community: mongodb://admin:admin123@localhost:27017/?authSource=admin
-  Db: Community

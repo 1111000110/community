@@ -1,8 +1,10 @@
 package model
 
-import "community.com/service/post/rpc/postservice"
+import (
+	"community.com/service/post/rpc/postservice"
+)
 
-func PostToModelPost(post *postservice.Post) *Post {
+func RpcPostToModelPost(post *postservice.Post) *Post {
 	return &Post{
 		PostId:   post.PostId,
 		UserId:   post.UserId,
@@ -17,7 +19,7 @@ func PostToModelPost(post *postservice.Post) *Post {
 	}
 }
 
-func ModelPostToPost(post *Post) *postservice.Post {
+func ModelPostToRpcPost(post *Post) *postservice.Post {
 	return &postservice.Post{
 		PostId:     post.PostId,
 		UserId:     post.UserId,

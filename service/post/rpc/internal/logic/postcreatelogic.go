@@ -36,7 +36,7 @@ func (l *PostCreateLogic) PostCreate(in *__.PostCreateReq) (*__.PostCreateResp, 
 		log.Fatal(err)
 	}
 	in.GetPost().PostId = postId
-	err = l.svcCtx.PostMongoClient.Insert(l.ctx, model.PostToModelPost(in.GetPost()))
+	err = l.svcCtx.PostMongoClient.Insert(l.ctx, model.RpcPostToModelPost(in.GetPost()))
 	return &__.PostCreateResp{
 		PostId: postId,
 	}, err
