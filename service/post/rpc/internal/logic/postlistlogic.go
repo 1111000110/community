@@ -1,6 +1,7 @@
 package logic
 
 import (
+	model "community.com/service/post/model/mongo/post"
 	"context"
 
 	"community.com/service/post/rpc/internal/svc"
@@ -24,7 +25,11 @@ func NewPostListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PostList
 }
 
 func (l *PostListLogic) PostList(in *__.PostListReq) (*__.PostListResp, error) {
-	// todo: add your logic here and delete this line
-
-	return &__.PostListResp{}, nil
+	data, err := l.svcCtx.PostMongoClient.FindAllByPostIds(l.ctx, in.PostIds)
+	if err != nil {
+		return nil, err
+	}
+	return &__.PostListResp{
+		Posts: model.ModelPostsToRpcPosts(data),
+	}, nil
 }

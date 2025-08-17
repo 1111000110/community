@@ -1,5 +1,5 @@
 MysqlConf:
   Community: "root:@tcp(127.0.0.1:3306)/community?charset=utf8mb4&parseTime=True&loc=Local"
 MongoConf:
-  Community: mongodb://admin:admin123@localhost:27017/?authSource=admin
+  Community: mongodb://localhost:27017/
   Db: Community

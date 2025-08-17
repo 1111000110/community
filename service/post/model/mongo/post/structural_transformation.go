@@ -33,3 +33,10 @@ func ModelPostToRpcPost(post *Post) *postservice.Post {
 		UpdateTime: post.UpdateAt,
 	}
 }
+func ModelPostsToRpcPosts(posts []*Post) []*postservice.Post {
+	result := make([]*postservice.Post, 0, len(posts))
+	for _, post := range posts {
+		result = append(result, ModelPostToRpcPost(post))
+	}
+	return result
+}

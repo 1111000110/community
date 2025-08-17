@@ -15,12 +15,23 @@ type (
 	PostModel interface {
 		postModel
 		FindOneByPostId(context.Context, int64) (*Post, error)
+		DeleteOneByPostId(context.Context, int64) error
+		FindAllByPostIds(context.Context, []int64) ([]*Post, error)
 	}
 
 	customPostModel struct {
 		*defaultPostModel
 	}
 )
+
+func (m *customPostModel) FindAllByPostIds(ctx context.Context, postIds []int64) ([]*Post, error) {
+	var data []*Post
+	err := m.conn.Find(ctx, &data, bson.M{"postId": bson.M{"$in": postIds}})
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
 
 func (m *customPostModel) FindOneByPostId(ctx context.Context, postId int64) (*Post, error) {
 	var data Post
@@ -33,6 +44,11 @@ func (m *customPostModel) FindOneByPostId(ctx context.Context, postId int64) (*P
 	default:
 		return nil, err
 	}
+}
+
+func (m *customPostModel) DeleteOneByPostId(ctx context.Context, postId int64) error {
+	_, err := m.conn.DeleteOne(ctx, &bson.M{"postId": postId})
+	return err
 }
 
 // NewPostModel returns a model for the mongo.

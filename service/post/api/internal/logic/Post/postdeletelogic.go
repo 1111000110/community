@@ -1,7 +1,10 @@
 package Post
 
 import (
+	"community.com/pkg/tool"
+	"community.com/service/post/rpc/postservice"
 	"context"
+	"errors"
 
 	"community.com/service/post/api/internal/svc"
 	"community.com/service/post/api/internal/types"
@@ -24,7 +27,24 @@ func NewPostDeleteLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PostDe
 }
 
 func (l *PostDeleteLogic) PostDelete(req *types.PostDeleteReq) (resp *types.PostDeleteResp, err error) {
-	// todo: add your logic here and delete this line
-
+	userId, err := tool.GetUserId(l.ctx)
+	if err != nil {
+		return nil, err
+	}
+	postDetail, err := l.svcCtx.RpcClient.PostClient.PostDetail(l.ctx, &postservice.PostDetailReq{
+		PostId: req.PostId,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if postDetail.GetPost().GetUserId() != userId {
+		return nil, errors.New("不可以删除其他人的作品哦~")
+	}
+	_, err = l.svcCtx.RpcClient.PostClient.PostDelete(l.ctx, &postservice.PostDeleteReq{
+		PostId: req.PostId,
+	})
+	if err != nil {
+		return nil, err
+	}
 	return
 }

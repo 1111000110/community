@@ -45,6 +45,8 @@ func (l *PostCreateLogic) PostCreate(req *types.PostCreateReq) (resp *types.Post
 	if err != nil {
 		return nil, err
 	}
-	resp.PostId = postCreateResp.PostId
+	resp = &types.PostCreateResp{
+		PostId: postCreateResp.PostId,
+	}
 	return
 }
