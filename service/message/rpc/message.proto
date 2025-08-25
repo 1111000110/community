@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package message;
+
+option go_package = "./";
+service Message{
+  rpc GetMessageByIds(GetMessageByIdsReq)returns (GetMessageByIdsResp);
+}
+message GetMessageByIdsReq{
+  int64 recivedID
+}

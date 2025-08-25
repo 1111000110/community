@@ -1,5 +1,14 @@
 MysqlConf:
-  Community: "root:@tcp(127.0.0.1:3306)/community?charset=utf8mb4&parseTime=True&loc=Local"
+  Community: "root:123456@tcp(mysql:3306)/community?charset=utf8mb4&parseTime=True&loc=Local"
 MongoConf:
-  Community: mongodb://localhost:27017/
+  Community: mongodb://mongo:27017/
   Db: Community
+RedisConf:
+  Community: redis:6379
+EsConf:
+  Community: http://elasticsearch:9200
+KafkaConf:
+  Community: kafka:9092
+ScyllaConf:
+  Community: scylla:9042
+  Keyspace: community

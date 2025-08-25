@@ -1,7 +1,7 @@
 package svc
 
 import (
-	"community.com/service/post/model/mongo/post"
+	model "community.com/service/post/model/mongo/post"
 	"community.com/service/post/rpc/internal/config"
 )
 
