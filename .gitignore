@@ -1,0 +1,10 @@
+# 忽略 Docker 数据目录（你的大文件都在这里）
+docker-data/
+
+# 额外补充：常见的无需跟踪的文件（可选，避免后续踩坑）
+*.log        # 忽略所有日志文件
+*.gz         # 忽略压缩文件
+*.jar        # 忽略 jar 包
+.DS_Store    # macOS 系统文件
+node_modules/ # 前端依赖（如果有）
+venv/        # Python 虚拟环境（如果有）
