@@ -8,5 +8,10 @@ RedisConf:
 KafkaConf:
   Community: kafka:9092
 ScyllaConf:
-  Community: scylla:9042
+  # 集群节点列表（Docker内部用容器名，宿主机用localhost:端口）
+  Hosts:
+    - "scylla-node1:9042"
+    - "scylla-node2:9042"
   Keyspace: community
+  Consistency: "quorum"# 一致性级别
+  Timeout: 10 # 和超时设置

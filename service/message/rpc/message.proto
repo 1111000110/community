@@ -4,8 +4,72 @@ package message;
 
 option go_package = "./";
 service Message{
-  rpc GetMessageByIds(GetMessageByIdsReq)returns (GetMessageByIdsResp);
+  rpc GetMessageByIds(GetMessageByIdsReq)returns (GetMessageByIdsResp);// 根据id获取消息列表
+  rpc GetMessageList(GetMessageListReq)returns (GetMessageListResp);// 获取消息列表
+  rpc CreateMessage(CreateMessageReq)returns (CreateMessageResp);// 创建消息
+  rpc UpdateMessageById(UpdateMessageByIdReq)returns(UpdateMessageByIdResp);// 更新消息
+  rpc DeleteMessage(DeleteMessageReq)returns (DeleteMessageResp);// 删除消息
 }
+
+message MessageContent {
+  string text = 1;              // 文本内容
+  int64 message_type = 2;       // 消息类型
+  string addition = 3;          // 附加消息（图片/文件等，JSON格式）
+}
+
+message MessageDetail {
+  int64 message_id = 1;         // 消息唯一ID
+  int64 session_id = 2;         // 会话ID（关联群聊或单聊）
+  int64 send_id = 3;            // 发送者ID
+  int64 recipient_id = 4;       // 接收者ID（群聊时可设为0）
+  int64 reply_id = 5;           // 回复的消息ID（0表示非回复）
+  int64 create_time = 6;        // 创建时间（毫秒级时间戳）
+  int64 update_time = 7;        // 更新时间（编辑/撤回时更新）
+  int64 status = 8;             // 消息状态
+  MessageContent content = 9;   // 消息内容
+}
+
 message GetMessageByIdsReq{
-  int64 recivedID
+  int64 session_id=1;
+  repeated int64 recipient_id=2;
+}
+
+message GetMessageByIdsResp{
+  repeated MessageDetail message=1;
+}
+
+message GetMessageListReq{
+  int64 session_is=1;
+  int64 req=2;
+  int64 limit=3;
+}
+
+message GetMessageListResp{
+  repeated MessageDetail message=1;
+}
+
+message CreateMessageReq{
+    MessageDetail message=1;
+}
+
+message CreateMessageResp{
+
+}
+
+message UpdateMessageByIdReq{
+  MessageDetail message=1;
+}
+
+message UpdateMessageByIdResp{
+
+}
+
+message DeleteMessageReq{
+  int64 session_id=1;// 删除的会话id
+  int64 send_id=2;// 删除的发送者id
+  int64 message_id=3;
+}
+
+message DeleteMessageResp{
+
 }

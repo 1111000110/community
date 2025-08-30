@@ -9,12 +9,12 @@ import (
 // Snowflake 雪花算法ID生成器
 // 64位ID结构: 1位符号位(0) + 41位时间戳 + 5位数据中心ID + 5位机器ID + 12位序列号
 type Snowflake struct {
-	mutex         sync.Mutex // 互斥锁，保证线程安全
-	timestamp     int64      // 上次生成ID的时间戳
-	datacenterID  int64      // 数据中心ID (0-31)
-	machineID     int64      // 机器ID (0-31)
-	sequence      int64      // 序列号 (0-4095)
-	epoch         int64      // 起始时间戳 (2023-01-01 00:00:00 UTC)
+	mutex        sync.Mutex // 互斥锁，保证线程安全
+	timestamp    int64      // 上次生成ID的时间戳
+	datacenterID int64      // 数据中心ID (0-31)
+	machineID    int64      // 机器ID (0-31)
+	sequence     int64      // 序列号 (0-4095)
+	epoch        int64      // 起始时间戳 (2023-01-01 00:00:00 UTC)
 }
 
 // 位数定义
@@ -34,8 +34,8 @@ const (
 	maxSequence     = -1 ^ (-1 << sequenceBits)     // 4095
 
 	// 位移量
-	machineIDShift     = sequenceBits                            // 12
-	datacenterIDShift  = sequenceBits + machineIDBits            // 17
+	machineIDShift     = sequenceBits                                    // 12
+	datacenterIDShift  = sequenceBits + machineIDBits                    // 17
 	timestampLeftShift = sequenceBits + machineIDBits + datacenterIDBits // 22
 )
 
@@ -151,41 +151,4 @@ func (s *Snowflake) GetMachineID(id int64) int64 {
 // GetSequence 从ID中提取序列号
 func (s *Snowflake) GetSequence(id int64) int64 {
 	return id & maxSequence
-}
-
-// 全局默认实例
-var defaultSnowflake *Snowflake
-var once sync.Once
-
-// InitDefault 初始化默认雪花算法实例
-func InitDefault(datacenterID, machineID int64) error {
-	var err error
-	once.Do(func() {
-		defaultSnowflake, err = NewSnowflake(datacenterID, machineID)
-	})
-	return err
-}
-
-// NextID 使用默认实例生成ID
-func NextID() (int64, error) {
-	if defaultSnowflake == nil {
-		return 0, errors.New("default snowflake not initialized, call InitDefault first")
-	}
-	return defaultSnowflake.NextID()
-}
-
-// ParseID 使用默认实例解析ID
-func ParseID(id int64) (timestamp int64, datacenterID int64, machineID int64, sequence int64) {
-	if defaultSnowflake == nil {
-		return 0, 0, 0, 0
-	}
-	return defaultSnowflake.ParseID(id)
-}
-
-// GetTimestamp 使用默认实例从ID中提取时间戳
-func GetTimestamp(id int64) time.Time {
-	if defaultSnowflake == nil {
-		return time.Time{}
-	}
-	return defaultSnowflake.GetTimestamp(id)
 }

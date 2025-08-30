@@ -45,19 +45,50 @@ services:
     networks:
       - db-network
 
-  # Scylla 服务
-  scylla:
+  # scylla
+  # 节点1
+  scylla-node1:
     image: scylladb/scylla:5.4
-    container_name: scylla-local
-    restart: always
+    container_name: scylla-node1
+    restart: unless-stopped
     ports:
       - "9042:9042"
-      - "9160:9160"
     volumes:
-      - ./docker-data/scylla:/var/lib/scylla
+      - ./docker-data/scylla/node1:/var/lib/scylla
     networks:
       - db-network
-    command: --smp 1 --memory 1G
+    command: --seeds=scylla-node1 --smp 1 --memory 1G --overprovisioned 1
+    environment:
+      - SCYLLA_BROADCAST_ADDRESS=scylla-node1
+    healthcheck:
+      test: ["CMD", "cqlsh", "-u", "cassandra", "-p", "cassandra", "-e", "DESCRIBE keyspaces"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 60s
+
+  scylla-node2:
+    image: scylladb/scylla:5.4
+    container_name: scylla-node2
+    restart: unless-stopped
+    ports:
+      - "9043:9042"
+    volumes:
+      - ./docker-data/scylla/node2:/var/lib/scylla
+    networks:
+      - db-network
+    command: --seeds=scylla-node1 --smp 1 --memory 1G --overprovisioned 1
+    environment:
+      - SCYLLA_BROADCAST_ADDRESS=scylla-node2
+    healthcheck:
+      test: ["CMD", "cqlsh", "-u", "cassandra", "-p", "cassandra", "-e", "DESCRIBE keyspaces"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 60s
+    depends_on:
+      scylla-node1:
+        condition: service_healthy  # 使用健康状态依赖
 
   # Zookeeper 服务
   zookeeper:

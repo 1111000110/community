@@ -16,22 +16,24 @@ type PostCreateLogic struct {
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 	logx.Logger
+	snowflakes *snowflakes.Snowflake
 }
 
 func NewPostCreateLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PostCreateLogic {
+	snowflake, err := snowflakes.NewSnowflake(1, 1)
+	if err != nil {
+		panic(err)
+	}
 	return &PostCreateLogic{
-		ctx:    ctx,
-		svcCtx: svcCtx,
-		Logger: logx.WithContext(ctx),
+		ctx:        ctx,
+		svcCtx:     svcCtx,
+		Logger:     logx.WithContext(ctx),
+		snowflakes: snowflake,
 	}
 }
 
 func (l *PostCreateLogic) PostCreate(in *__.PostCreateReq) (*__.PostCreateResp, error) {
-	sf, err := snowflakes.NewSnowflake(1, 1)
-	if err != nil {
-		log.Fatal(err)
-	}
-	postId, err := sf.NextID()
+	postId, err := l.snowflakes.NextID()
 	if err != nil {
 		log.Fatal(err)
 	}
