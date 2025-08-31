@@ -24,7 +24,8 @@ func NewDeleteMessageLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Del
 }
 
 func (l *DeleteMessageLogic) DeleteMessage(in *__.DeleteMessageReq) (*__.DeleteMessageResp, error) {
-	// todo: add your logic here and delete this line
-
+	if err := l.svcCtx.ScyllaClient.DeleteMessage(l.ctx, in.GetMessageId(), in.GetMessageId()); err != nil {
+		return nil, err
+	}
 	return &__.DeleteMessageResp{}, nil
 }

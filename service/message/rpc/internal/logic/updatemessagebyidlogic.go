@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"community.com/service/message/model/scylla/message"
 	"context"
 
 	"community.com/service/message/rpc/internal/svc"
@@ -24,7 +25,17 @@ func NewUpdateMessageByIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 }
 
 func (l *UpdateMessageByIdLogic) UpdateMessageById(in *__.UpdateMessageByIdReq) (*__.UpdateMessageByIdResp, error) {
-	// todo: add your logic here and delete this line
-
+	if err := l.svcCtx.ScyllaClient.UpdateMessageById(l.ctx, in.GetMessage().GetSessionId(), in.GetMessage().GetMessageId(), &message.Message{
+		SendId:      in.GetMessage().GetSendId(),
+		RecipientId: in.GetMessage().GetRecipientId(),
+		ReplyId:     in.GetMessage().GetReplyId(),
+		UpdateTime:  in.GetMessage().GetUpdateTime(),
+		Status:      in.GetMessage().GetStatus(),
+		Text:        in.GetMessage().GetContent().GetText(),
+		MessageType: in.GetMessage().GetContent().GetMessageType(),
+		Addition:    in.GetMessage().GetContent().GetAddition(),
+	}); err != nil {
+		return nil, err
+	}
 	return &__.UpdateMessageByIdResp{}, nil
 }

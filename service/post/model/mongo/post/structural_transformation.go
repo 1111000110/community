@@ -4,7 +4,7 @@ import (
 	"community.com/service/post/rpc/postservice"
 )
 
-func RpcPostToModelPost(post *postservice.Post) *Post {
+func RpcPostToPost(post *postservice.Post) *Post {
 	return &Post{
 		PostId:   post.PostId,
 		UserId:   post.UserId,
@@ -19,7 +19,7 @@ func RpcPostToModelPost(post *postservice.Post) *Post {
 	}
 }
 
-func ModelPostToRpcPost(post *Post) *postservice.Post {
+func PostToRpcPost(post *Post) *postservice.Post {
 	return &postservice.Post{
 		PostId:     post.PostId,
 		UserId:     post.UserId,
@@ -33,10 +33,10 @@ func ModelPostToRpcPost(post *Post) *postservice.Post {
 		UpdateTime: post.UpdateAt,
 	}
 }
-func ModelPostsToRpcPosts(posts []*Post) []*postservice.Post {
+func PostsToRpcPosts(posts []*Post) []*postservice.Post {
 	result := make([]*postservice.Post, 0, len(posts))
 	for _, post := range posts {
-		result = append(result, ModelPostToRpcPost(post))
+		result = append(result, PostToRpcPost(post))
 	}
 	return result
 }

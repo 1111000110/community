@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"community.com/service/message/model/scylla/message"
 	"context"
 
 	"community.com/service/message/rpc/internal/svc"
@@ -24,7 +25,11 @@ func NewGetMessageByIdsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *G
 }
 
 func (l *GetMessageByIdsLogic) GetMessageByIds(in *__.GetMessageByIdsReq) (*__.GetMessageByIdsResp, error) {
-	// todo: add your logic here and delete this line
-
-	return &__.GetMessageByIdsResp{}, nil
+	data, err := l.svcCtx.ScyllaClient.GetMessageByIds(l.ctx, in.GetSessionId(), in.GetRecipientId())
+	if err != nil {
+		return nil, err
+	}
+	return &__.GetMessageByIdsResp{
+		Message: message.ModelsToRpcModels(data),
+	}, nil
 }

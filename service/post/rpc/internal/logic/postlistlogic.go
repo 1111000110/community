@@ -30,6 +30,6 @@ func (l *PostListLogic) PostList(in *__.PostListReq) (*__.PostListResp, error) {
 		return nil, err
 	}
 	return &__.PostListResp{
-		Posts: model.ModelPostsToRpcPosts(data),
+		Posts: model.PostsToRpcPosts(data),
 	}, nil
 }

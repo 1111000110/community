@@ -287,7 +287,7 @@ func (x *GetMessageByIdsResp) GetMessage() []*MessageDetail {
 
 type GetMessageListReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionIs     int64                  `protobuf:"varint,1,opt,name=session_is,json=sessionIs,proto3" json:"session_is,omitempty"`
+	SessionId     int64                  `protobuf:"varint,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	Req           int64                  `protobuf:"varint,2,opt,name=req,proto3" json:"req,omitempty"`
 	Limit         int64                  `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -324,9 +324,9 @@ func (*GetMessageListReq) Descriptor() ([]byte, []int) {
 	return file_message_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *GetMessageListReq) GetSessionIs() int64 {
+func (x *GetMessageListReq) GetSessionId() int64 {
 	if x != nil {
-		return x.SessionIs
+		return x.SessionId
 	}
 	return 0
 }
@@ -676,7 +676,7 @@ const file_message_proto_rawDesc = "" +
 	"\amessage\x18\x01 \x03(\v2\x16.message.MessageDetailR\amessage\"Z\n" +
 	"\x11GetMessageListReq\x12\x1d\n" +
 	"\n" +
-	"session_is\x18\x01 \x01(\x03R\tsessionIs\x12\x10\n" +
+	"session_id\x18\x01 \x01(\x03R\tsessionId\x12\x10\n" +
 	"\x03req\x18\x02 \x01(\x03R\x03req\x12\x14\n" +
 	"\x05limit\x18\x03 \x01(\x03R\x05limit\"F\n" +
 	"\x12GetMessageListResp\x120\n" +

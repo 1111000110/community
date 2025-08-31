@@ -3,8 +3,6 @@ package message
 import (
 	"context"
 	"fmt"
-	"strings"
-
 	"github.com/gocql/gocql"
 	"github.com/pkg/errors"
 )
@@ -39,11 +37,11 @@ const (
 
 	GetMessageList = `SELECT session_id, message_id, send_id, recipient_id, reply_id,
 		create_time, update_time, status, text, message_type, addition
-		FROM community.messages WHERE session_id = ? LIMIT ?`
+		FROM community.messages WHERE session_id = ? AND message_id>? LIMIT ? order by create_time DESC`
 
-	GetMessageByIdsTemplate = `SELECT session_id, message_id, send_id, recipient_id, reply_id,
+	GetMessageByIds = `SELECT session_id, message_id, send_id, recipient_id, reply_id,
 		create_time, update_time, status, text, message_type, addition
-		FROM community.messages WHERE session_id = ? AND message_id IN (%s)`
+		FROM community.messages WHERE session_id = ? AND message_id IN ?`
 )
 
 type Message struct {
@@ -62,9 +60,9 @@ type Message struct {
 
 type MessageModel interface {
 	CreateMessage(ctx context.Context, message *Message) error
-	UpdateMessageById(ctx context.Context, message *Message) error
+	UpdateMessageById(ctx context.Context, sessionId, messageId int64, message *Message) error
 	DeleteMessage(ctx context.Context, sessionId, messageId int64) error
-	GetMessageList(ctx context.Context, sessionId int64, limit int) ([]*Message, error)
+	GetMessageList(ctx context.Context, sessionId int64, req, limit int) ([]*Message, error)
 	GetMessageByIds(ctx context.Context, sessionId int64, messageIds []int64) ([]*Message, error)
 }
 
@@ -118,7 +116,7 @@ func (m *defaultMessageModel) CreateMessage(ctx context.Context, message *Messag
 }
 
 // UpdateMessageById 更新消息
-func (m *defaultMessageModel) UpdateMessageById(ctx context.Context, message *Message) error {
+func (m *defaultMessageModel) UpdateMessageById(ctx context.Context, sessionId, MessageId int64, message *Message) error {
 	if message == nil {
 		return errors.New("message cannot be nil")
 	}
@@ -132,9 +130,9 @@ func (m *defaultMessageModel) UpdateMessageById(ctx context.Context, message *Me
 		message.Text,
 		message.MessageType,
 		message.Addition,
-		message.SessionId,
-		message.MessageId,
-	).Exec()
+		sessionId,
+		MessageId,
+	).WithContext(ctx).Exec()
 
 	if err != nil {
 		return errors.Wrap(err, "failed to update message")
@@ -154,7 +152,7 @@ func (m *defaultMessageModel) DeleteMessage(ctx context.Context, sessionId, mess
 }
 
 // GetMessageList 获取消息列表（按proto中的GetMessageList接口）
-func (m *defaultMessageModel) GetMessageList(ctx context.Context, sessionId int64, limit int) ([]*Message, error) {
+func (m *defaultMessageModel) GetMessageList(ctx context.Context, sessionId int64, req, limit int) ([]*Message, error) {
 	if limit <= 0 {
 		limit = 50 // 默认限制
 	}
@@ -162,7 +160,7 @@ func (m *defaultMessageModel) GetMessageList(ctx context.Context, sessionId int6
 		limit = 1000 // 最大限制
 	}
 
-	iter := m.session.Query(GetMessageList, sessionId, limit).Iter()
+	iter := m.session.Query(GetMessageList, sessionId, req, limit).WithContext(ctx).Iter()
 
 	var messages []*Message
 	var message Message
@@ -190,28 +188,11 @@ func (m *defaultMessageModel) GetMessageList(ctx context.Context, sessionId int6
 	return messages, nil
 }
 
-// GetMessageByIds 根据多个ID批量查找消息（按proto中的GetMessageByIds接口）
 func (m *defaultMessageModel) GetMessageByIds(ctx context.Context, sessionId int64, messageIds []int64) ([]*Message, error) {
 	if len(messageIds) == 0 {
 		return []*Message{}, nil
 	}
-
-	// 构建IN查询占位符
-	placeholders := make([]string, len(messageIds))
-	args := make([]interface{}, len(messageIds))
-	for i, id := range messageIds {
-		placeholders[i] = "?"
-		args[i] = id
-	}
-
-	// 构建查询语句
-	inClause := strings.Join(placeholders, ",")
-	query := strings.Replace(GetMessageByIdsTemplate, "%s", inClause, 1)
-
-	// 在参数前加上sessionId
-	fullArgs := append([]interface{}{sessionId}, args...)
-
-	iter := m.session.Query(query, fullArgs...).Iter()
+	iter := m.session.Query(GetMessageByIds, sessionId, messageIds).WithContext(ctx).Iter()
 
 	var messages []*Message
 	var message Message
@@ -228,7 +209,7 @@ func (m *defaultMessageModel) GetMessageByIds(ctx context.Context, sessionId int
 		&message.MessageType,
 		&message.Addition,
 	) {
-		msg := message // 复制结构体
+		msg := message
 		messages = append(messages, &msg)
 	}
 

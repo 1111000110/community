@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"community.com/service/message/model/scylla/message"
 	"context"
 
 	"community.com/service/message/rpc/internal/svc"
@@ -24,7 +25,11 @@ func NewGetMessageListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 }
 
 func (l *GetMessageListLogic) GetMessageList(in *__.GetMessageListReq) (*__.GetMessageListResp, error) {
-	// todo: add your logic here and delete this line
-
-	return &__.GetMessageListResp{}, nil
+	data, err := l.svcCtx.ScyllaClient.GetMessageList(l.ctx, in.GetSessionId(), int(in.GetReq()), int(in.GetLimit()))
+	if err != nil {
+		return nil, err
+	}
+	return &__.GetMessageListResp{
+		Message: message.ModelsToRpcModels(data),
+	}, nil
 }
