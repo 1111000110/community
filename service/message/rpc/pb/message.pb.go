@@ -83,15 +83,14 @@ func (x *MessageContent) GetAddition() string {
 
 type MessageDetail struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	MessageId     int64                  `protobuf:"varint,1,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"`       // 消息唯一ID
-	SessionId     int64                  `protobuf:"varint,2,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`       // 会话ID（关联群聊或单聊）
-	SendId        int64                  `protobuf:"varint,3,opt,name=send_id,json=sendId,proto3" json:"send_id,omitempty"`                // 发送者ID
-	RecipientId   int64                  `protobuf:"varint,4,opt,name=recipient_id,json=recipientId,proto3" json:"recipient_id,omitempty"` // 接收者ID（群聊时可设为0）
-	ReplyId       int64                  `protobuf:"varint,5,opt,name=reply_id,json=replyId,proto3" json:"reply_id,omitempty"`             // 回复的消息ID（0表示非回复）
-	CreateTime    int64                  `protobuf:"varint,6,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`    // 创建时间（毫秒级时间戳）
-	UpdateTime    int64                  `protobuf:"varint,7,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`    // 更新时间（编辑/撤回时更新）
-	Status        int64                  `protobuf:"varint,8,opt,name=status,proto3" json:"status,omitempty"`                              // 消息状态
-	Content       *MessageContent        `protobuf:"bytes,9,opt,name=content,proto3" json:"content,omitempty"`                             // 消息内容
+	MessageId     int64                  `protobuf:"varint,1,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"`    // 消息唯一ID
+	SessionId     string                 `protobuf:"bytes,2,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`     // 会话ID（关联群聊或单聊）
+	SendId        int64                  `protobuf:"varint,3,opt,name=send_id,json=sendId,proto3" json:"send_id,omitempty"`             // 发送者ID
+	ReplyId       int64                  `protobuf:"varint,4,opt,name=reply_id,json=replyId,proto3" json:"reply_id,omitempty"`          // 回复的消息ID（0表示非回复）
+	CreateTime    int64                  `protobuf:"varint,5,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"` // 创建时间（毫秒级时间戳）
+	UpdateTime    int64                  `protobuf:"varint,6,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"` // 更新时间（编辑/撤回时更新）
+	Status        int64                  `protobuf:"varint,7,opt,name=status,proto3" json:"status,omitempty"`                           // 消息状态
+	Content       *MessageContent        `protobuf:"bytes,8,opt,name=content,proto3" json:"content,omitempty"`                          // 消息内容
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -133,23 +132,16 @@ func (x *MessageDetail) GetMessageId() int64 {
 	return 0
 }
 
-func (x *MessageDetail) GetSessionId() int64 {
+func (x *MessageDetail) GetSessionId() string {
 	if x != nil {
 		return x.SessionId
 	}
-	return 0
+	return ""
 }
 
 func (x *MessageDetail) GetSendId() int64 {
 	if x != nil {
 		return x.SendId
-	}
-	return 0
-}
-
-func (x *MessageDetail) GetRecipientId() int64 {
-	if x != nil {
-		return x.RecipientId
 	}
 	return 0
 }
@@ -191,8 +183,8 @@ func (x *MessageDetail) GetContent() *MessageContent {
 
 type GetMessageByIdsReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     int64                  `protobuf:"varint,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	RecipientId   []int64                `protobuf:"varint,2,rep,packed,name=recipient_id,json=recipientId,proto3" json:"recipient_id,omitempty"`
+	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	MessageId     []int64                `protobuf:"varint,2,rep,packed,name=message_id,json=messageId,proto3" json:"message_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -227,16 +219,16 @@ func (*GetMessageByIdsReq) Descriptor() ([]byte, []int) {
 	return file_message_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetMessageByIdsReq) GetSessionId() int64 {
+func (x *GetMessageByIdsReq) GetSessionId() string {
 	if x != nil {
 		return x.SessionId
 	}
-	return 0
+	return ""
 }
 
-func (x *GetMessageByIdsReq) GetRecipientId() []int64 {
+func (x *GetMessageByIdsReq) GetMessageId() []int64 {
 	if x != nil {
-		return x.RecipientId
+		return x.MessageId
 	}
 	return nil
 }
@@ -287,7 +279,7 @@ func (x *GetMessageByIdsResp) GetMessage() []*MessageDetail {
 
 type GetMessageListReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     int64                  `protobuf:"varint,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	Req           int64                  `protobuf:"varint,2,opt,name=req,proto3" json:"req,omitempty"`
 	Limit         int64                  `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -324,11 +316,11 @@ func (*GetMessageListReq) Descriptor() ([]byte, []int) {
 	return file_message_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *GetMessageListReq) GetSessionId() int64 {
+func (x *GetMessageListReq) GetSessionId() string {
 	if x != nil {
 		return x.SessionId
 	}
-	return 0
+	return ""
 }
 
 func (x *GetMessageListReq) GetReq() int64 {
@@ -551,8 +543,8 @@ func (*UpdateMessageByIdResp) Descriptor() ([]byte, []int) {
 
 type DeleteMessageReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     int64                  `protobuf:"varint,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"` // 删除的会话id
-	SendId        int64                  `protobuf:"varint,2,opt,name=send_id,json=sendId,proto3" json:"send_id,omitempty"`          // 删除的发送者id
+	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"` // 删除的会话id
+	SendId        int64                  `protobuf:"varint,2,opt,name=send_id,json=sendId,proto3" json:"send_id,omitempty"`         // 删除的发送者id
 	MessageId     int64                  `protobuf:"varint,3,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -588,11 +580,11 @@ func (*DeleteMessageReq) Descriptor() ([]byte, []int) {
 	return file_message_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *DeleteMessageReq) GetSessionId() int64 {
+func (x *DeleteMessageReq) GetSessionId() string {
 	if x != nil {
 		return x.SessionId
 	}
-	return 0
+	return ""
 }
 
 func (x *DeleteMessageReq) GetSendId() int64 {
@@ -653,30 +645,30 @@ const file_message_proto_rawDesc = "" +
 	"\x0eMessageContent\x12\x12\n" +
 	"\x04text\x18\x01 \x01(\tR\x04text\x12!\n" +
 	"\fmessage_type\x18\x02 \x01(\x03R\vmessageType\x12\x1a\n" +
-	"\baddition\x18\x03 \x01(\tR\baddition\"\xb1\x02\n" +
+	"\baddition\x18\x03 \x01(\tR\baddition\"\x8e\x02\n" +
 	"\rMessageDetail\x12\x1d\n" +
 	"\n" +
 	"message_id\x18\x01 \x01(\x03R\tmessageId\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x02 \x01(\x03R\tsessionId\x12\x17\n" +
-	"\asend_id\x18\x03 \x01(\x03R\x06sendId\x12!\n" +
-	"\frecipient_id\x18\x04 \x01(\x03R\vrecipientId\x12\x19\n" +
-	"\breply_id\x18\x05 \x01(\x03R\areplyId\x12\x1f\n" +
-	"\vcreate_time\x18\x06 \x01(\x03R\n" +
+	"session_id\x18\x02 \x01(\tR\tsessionId\x12\x17\n" +
+	"\asend_id\x18\x03 \x01(\x03R\x06sendId\x12\x19\n" +
+	"\breply_id\x18\x04 \x01(\x03R\areplyId\x12\x1f\n" +
+	"\vcreate_time\x18\x05 \x01(\x03R\n" +
 	"createTime\x12\x1f\n" +
-	"\vupdate_time\x18\a \x01(\x03R\n" +
+	"\vupdate_time\x18\x06 \x01(\x03R\n" +
 	"updateTime\x12\x16\n" +
-	"\x06status\x18\b \x01(\x03R\x06status\x121\n" +
-	"\acontent\x18\t \x01(\v2\x17.message.MessageContentR\acontent\"V\n" +
+	"\x06status\x18\a \x01(\x03R\x06status\x121\n" +
+	"\acontent\x18\b \x01(\v2\x17.message.MessageContentR\acontent\"R\n" +
 	"\x12GetMessageByIdsReq\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x01 \x01(\x03R\tsessionId\x12!\n" +
-	"\frecipient_id\x18\x02 \x03(\x03R\vrecipientId\"G\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x1d\n" +
+	"\n" +
+	"message_id\x18\x02 \x03(\x03R\tmessageId\"G\n" +
 	"\x13GetMessageByIdsResp\x120\n" +
 	"\amessage\x18\x01 \x03(\v2\x16.message.MessageDetailR\amessage\"Z\n" +
 	"\x11GetMessageListReq\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x01 \x01(\x03R\tsessionId\x12\x10\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x10\n" +
 	"\x03req\x18\x02 \x01(\x03R\x03req\x12\x14\n" +
 	"\x05limit\x18\x03 \x01(\x03R\x05limit\"F\n" +
 	"\x12GetMessageListResp\x120\n" +
@@ -689,7 +681,7 @@ const file_message_proto_rawDesc = "" +
 	"\x15UpdateMessageByIdResp\"i\n" +
 	"\x10DeleteMessageReq\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x01 \x01(\x03R\tsessionId\x12\x17\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x17\n" +
 	"\asend_id\x18\x02 \x01(\x03R\x06sendId\x12\x1d\n" +
 	"\n" +
 	"message_id\x18\x03 \x01(\x03R\tmessageId\"\x13\n" +

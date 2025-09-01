@@ -7,9 +7,9 @@ package server
 import (
 	"context"
 
-	"community.com/infra/weather/rpc/internal/logic/weatherservice"
-	"community.com/infra/weather/rpc/internal/svc"
-	"community.com/infra/weather/rpc/pb"
+	"community.com/service/weather/rpc/internal/logic/weatherservice"
+	"community.com/service/weather/rpc/internal/svc"
+	"community.com/service/weather/rpc/pb"
 )
 
 type WeatherServiceServer struct {

@@ -44,7 +44,6 @@ func (l *CreateMessageLogic) CreateMessage(in *__.CreateMessageReq) (*__.CreateM
 		MessageId:   messageId,
 		SessionId:   in.GetMessage().GetSessionId(),
 		SendId:      in.GetMessage().GetSendId(),
-		RecipientId: in.GetMessage().GetRecipientId(),
 		ReplyId:     in.GetMessage().GetReplyId(),
 		CreateTime:  in.GetMessage().GetCreateTime(),
 		UpdateTime:  in.GetMessage().GetUpdateTime(),

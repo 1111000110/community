@@ -12,7 +12,6 @@ const (
 		session_id bigint,
 		message_id bigint,
 		send_id bigint,
-		recipient_id bigint,
 		reply_id bigint,
 		create_time bigint,
 		update_time bigint,
@@ -24,7 +23,7 @@ const (
 	) WITH CLUSTERING ORDER BY (message_id DESC)`
 
 	InsertMessage = `INSERT INTO community.messages (
-		session_id, message_id, send_id, recipient_id, reply_id,
+		session_id, message_id, send_id,  reply_id,
 		create_time, update_time, status, text, message_type, addition
 	) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
@@ -35,21 +34,20 @@ const (
 
 	DeleteMessage = `DELETE FROM community.messages WHERE session_id = ? AND message_id = ?`
 
-	GetMessageList = `SELECT session_id, message_id, send_id, recipient_id, reply_id,
+	GetMessageList = `SELECT session_id, message_id, send_id,  reply_id,
 		create_time, update_time, status, text, message_type, addition
 		FROM community.messages WHERE session_id = ? AND message_id>? LIMIT ? order by create_time DESC`
 
-	GetMessageByIds = `SELECT session_id, message_id, send_id, recipient_id, reply_id,
+	GetMessageByIds = `SELECT session_id, message_id, send_id,  reply_id,
 		create_time, update_time, status, text, message_type, addition
 		FROM community.messages WHERE session_id = ? AND message_id IN ?`
 )
 
 type Message struct {
 	MessageId   int64  `db:"message_id"`   // 消息唯一ID
-	SessionId   int64  `db:"session_id"`   // 会话ID（关联群聊或单聊）
+	SessionId   string `db:"session_id"`   // 会话ID（关联群聊或单聊）
 	SendId      int64  `db:"send_id"`      // 发送者ID
-	RecipientId int64  `db:"recipient_id"` // 接收者ID（群聊时可设为0）
-	ReplyId     int64  `db:"reply_id"`     // 回复的消息ID（0表示非回复）
+	ReplyId     int64  `db:"reply_id"`     // 回复的消息ID
 	CreateTime  int64  `db:"create_time"`  // 创建时间
 	UpdateTime  int64  `db:"update_time"`  // 更新时间
 	Status      int64  `db:"status"`       // 消息状态
@@ -60,10 +58,10 @@ type Message struct {
 
 type MessageModel interface {
 	CreateMessage(ctx context.Context, message *Message) error
-	UpdateMessageById(ctx context.Context, sessionId, messageId int64, message *Message) error
-	DeleteMessage(ctx context.Context, sessionId, messageId int64) error
-	GetMessageList(ctx context.Context, sessionId int64, req, limit int) ([]*Message, error)
-	GetMessageByIds(ctx context.Context, sessionId int64, messageIds []int64) ([]*Message, error)
+	UpdateMessageById(ctx context.Context, sessionId string, messageId int64, message *Message) error
+	DeleteMessage(ctx context.Context, sessionId string, messageId int64) error
+	GetMessageList(ctx context.Context, sessionId string, req, limit int) ([]*Message, error)
+	GetMessageByIds(ctx context.Context, sessionId string, messageIds []int64) ([]*Message, error)
 }
 
 type defaultMessageModel struct {
@@ -98,7 +96,6 @@ func (m *defaultMessageModel) CreateMessage(ctx context.Context, message *Messag
 		message.SessionId,
 		message.MessageId,
 		message.SendId,
-		message.RecipientId,
 		message.ReplyId,
 		message.CreateTime,
 		message.UpdateTime,
@@ -106,7 +103,7 @@ func (m *defaultMessageModel) CreateMessage(ctx context.Context, message *Messag
 		message.Text,
 		message.MessageType,
 		message.Addition,
-	).Exec()
+	).WithContext(ctx).Exec()
 
 	if err != nil {
 		return errors.Wrap(err, "failed to create message")
@@ -116,14 +113,13 @@ func (m *defaultMessageModel) CreateMessage(ctx context.Context, message *Messag
 }
 
 // UpdateMessageById 更新消息
-func (m *defaultMessageModel) UpdateMessageById(ctx context.Context, sessionId, MessageId int64, message *Message) error {
+func (m *defaultMessageModel) UpdateMessageById(ctx context.Context, sessionId string, MessageId int64, message *Message) error {
 	if message == nil {
 		return errors.New("message cannot be nil")
 	}
 
 	err := m.session.Query(UpdateMessage,
 		message.SendId,
-		message.RecipientId,
 		message.ReplyId,
 		message.UpdateTime,
 		message.Status,
@@ -142,8 +138,8 @@ func (m *defaultMessageModel) UpdateMessageById(ctx context.Context, sessionId, 
 }
 
 // DeleteMessage 删除消息
-func (m *defaultMessageModel) DeleteMessage(ctx context.Context, sessionId, messageId int64) error {
-	err := m.session.Query(DeleteMessage, sessionId, messageId).Exec()
+func (m *defaultMessageModel) DeleteMessage(ctx context.Context, sessionId string, messageId int64) error {
+	err := m.session.Query(DeleteMessage, sessionId, messageId).WithContext(ctx).Exec()
 	if err != nil {
 		return errors.Wrap(err, "failed to delete message")
 	}
@@ -152,7 +148,7 @@ func (m *defaultMessageModel) DeleteMessage(ctx context.Context, sessionId, mess
 }
 
 // GetMessageList 获取消息列表（按proto中的GetMessageList接口）
-func (m *defaultMessageModel) GetMessageList(ctx context.Context, sessionId int64, req, limit int) ([]*Message, error) {
+func (m *defaultMessageModel) GetMessageList(ctx context.Context, sessionId string, req, limit int) ([]*Message, error) {
 	if limit <= 0 {
 		limit = 50 // 默认限制
 	}
@@ -168,7 +164,6 @@ func (m *defaultMessageModel) GetMessageList(ctx context.Context, sessionId int6
 		&message.SessionId,
 		&message.MessageId,
 		&message.SendId,
-		&message.RecipientId,
 		&message.ReplyId,
 		&message.CreateTime,
 		&message.UpdateTime,
@@ -188,7 +183,7 @@ func (m *defaultMessageModel) GetMessageList(ctx context.Context, sessionId int6
 	return messages, nil
 }
 
-func (m *defaultMessageModel) GetMessageByIds(ctx context.Context, sessionId int64, messageIds []int64) ([]*Message, error) {
+func (m *defaultMessageModel) GetMessageByIds(ctx context.Context, sessionId string, messageIds []int64) ([]*Message, error) {
 	if len(messageIds) == 0 {
 		return []*Message{}, nil
 	}
@@ -200,7 +195,6 @@ func (m *defaultMessageModel) GetMessageByIds(ctx context.Context, sessionId int
 		&message.SessionId,
 		&message.MessageId,
 		&message.SendId,
-		&message.RecipientId,
 		&message.ReplyId,
 		&message.CreateTime,
 		&message.UpdateTime,

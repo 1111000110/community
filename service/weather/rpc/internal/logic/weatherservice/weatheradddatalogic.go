@@ -1,9 +1,9 @@
 package weatherservicelogic
 
 import (
-	model "community.com/infra/weather/model/mongo/subscription"
-	"community.com/infra/weather/rpc/internal/svc"
-	"community.com/infra/weather/rpc/pb"
+	model "community.com/service/weather/model/mongo/subscription"
+	"community.com/service/weather/rpc/internal/svc"
+	"community.com/service/weather/rpc/pb"
 	"context"
 	"github.com/zeromicro/go-zero/core/logx"
 )

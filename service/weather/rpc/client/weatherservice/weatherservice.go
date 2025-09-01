@@ -7,7 +7,7 @@ package weatherservice
 import (
 	"context"
 
-	"community.com/infra/weather/rpc/pb"
+	"community.com/service/weather/rpc/pb"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"

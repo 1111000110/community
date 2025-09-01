@@ -19,19 +19,18 @@ message MessageContent {
 
 message MessageDetail {
   int64 message_id = 1;         // 消息唯一ID
-  int64 session_id = 2;         // 会话ID（关联群聊或单聊）
+  string session_id = 2;         // 会话ID（关联群聊或单聊）
   int64 send_id = 3;            // 发送者ID
-  int64 recipient_id = 4;       // 接收者ID（群聊时可设为0）
-  int64 reply_id = 5;           // 回复的消息ID（0表示非回复）
-  int64 create_time = 6;        // 创建时间（毫秒级时间戳）
-  int64 update_time = 7;        // 更新时间（编辑/撤回时更新）
-  int64 status = 8;             // 消息状态
-  MessageContent content = 9;   // 消息内容
+  int64 reply_id = 4;           // 回复的消息ID（0表示非回复）
+  int64 create_time = 5;        // 创建时间（毫秒级时间戳）
+  int64 update_time = 6;        // 更新时间（编辑/撤回时更新）
+  int64 status = 7;             // 消息状态
+  MessageContent content = 8;   // 消息内容
 }
 
 message GetMessageByIdsReq{
-  int64 session_id=1;
-  repeated int64 recipient_id=2;
+  string session_id=1;
+  repeated int64 message_id=2;
 }
 
 message GetMessageByIdsResp{
@@ -39,7 +38,7 @@ message GetMessageByIdsResp{
 }
 
 message GetMessageListReq{
-  int64 session_id=1;
+  string session_id=1;
   int64 req=2;
   int64 limit=3;
 }
@@ -65,7 +64,7 @@ message UpdateMessageByIdResp{
 }
 
 message DeleteMessageReq{
-  int64 session_id=1;// 删除的会话id
+  string session_id=1;// 删除的会话id
   int64 send_id=2;// 删除的发送者id
   int64 message_id=3;
 }

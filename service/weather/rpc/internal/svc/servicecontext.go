@@ -1,7 +1,7 @@
 package svc
 
 import (
-	"community.com/infra/weather/rpc/internal/config"
+	"community.com/service/weather/rpc/internal/config"
 )
 
 type ServiceContext struct {

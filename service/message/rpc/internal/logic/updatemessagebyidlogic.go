@@ -27,7 +27,6 @@ func NewUpdateMessageByIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 func (l *UpdateMessageByIdLogic) UpdateMessageById(in *__.UpdateMessageByIdReq) (*__.UpdateMessageByIdResp, error) {
 	if err := l.svcCtx.ScyllaClient.UpdateMessageById(l.ctx, in.GetMessage().GetSessionId(), in.GetMessage().GetMessageId(), &message.Message{
 		SendId:      in.GetMessage().GetSendId(),
-		RecipientId: in.GetMessage().GetRecipientId(),
 		ReplyId:     in.GetMessage().GetReplyId(),
 		UpdateTime:  in.GetMessage().GetUpdateTime(),
 		Status:      in.GetMessage().GetStatus(),

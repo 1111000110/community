@@ -1,8 +1,8 @@
 package svc
 
 import (
-	model "community.com/infra/weather/model/mongo/subscription"
-	"community.com/infra/weather/rpc/internal/config"
+	model "community.com/service/weather/model/mongo/subscription"
+	"community.com/service/weather/rpc/internal/config"
 )
 
 type MongoClient struct {
