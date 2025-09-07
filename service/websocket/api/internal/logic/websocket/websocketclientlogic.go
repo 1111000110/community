@@ -69,7 +69,7 @@ func (l *WebSocketClientLogic) ReadPump() {
 		func() {
 			err := l.conn.Close()
 			if err != nil {
-				log.Printf("close websocket client conn err: %s", err.Error())
+				logx.Errorf("close websocket client conn err: %s", err.Error())
 			}
 		}()
 		close(l.sendBuffer)
@@ -79,13 +79,13 @@ func (l *WebSocketClientLogic) ReadPump() {
 		_, message, err := l.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("error: %v", err)
+				logx.Errorf("read message err: %s", err.Error())
 			}
 			break
 		}
 		logx.Info(string(message))
 		if err = l.conn.WriteMessage(websocket.TextMessage, message); err != nil {
-			log.Printf("write websocket message err: %s", err.Error())
+			logx.Errorf("write message err: %s", err.Error())
 		}
 	}
 }
@@ -100,7 +100,7 @@ func (l *WebSocketClientLogic) WritePump() {
 		func() {
 			err := l.conn.Close()
 			if err != nil {
-				log.Printf("close websocket client conn err: %s", err.Error())
+				logx.Errorf("close websocket client conn err: %s", err.Error())
 			}
 		}()
 	}()
@@ -112,13 +112,13 @@ func (l *WebSocketClientLogic) WritePump() {
 			// 设置写入超时时间
 			err := l.conn.SetWriteDeadline(time.Now().Add(time.Duration(l.svcCtx.Config.WebSocket.WriteWait) * time.Second))
 			if err != nil {
-				log.Fatalf("SetWriteDeadline failed: %s", err.Error())
+				logx.Errorf("set write deadline err: %s", err.Error())
 			}
 			if !ok {
 				// 如果 Hub 关闭了发送通道，发送关闭消息并退出
 				err = l.conn.WriteMessage(websocket.CloseMessage, []byte{})
 				if err != nil {
-					log.Printf("close websocket client conn err: %s", err.Error())
+					logx.Errorf("close websocket client conn err: %s", err.Error())
 				}
 				return
 			}
@@ -136,9 +136,10 @@ func (l *WebSocketClientLogic) WritePump() {
 			}
 			data, err := json.Marshal(msg)
 			if err != nil {
-				log.Fatalf("JSON marshaling failed: %s", err)
-			} else {
-				w.Write(data)
+				logx.Errorf("json marshal err: %s", err.Error())
+			}
+			if _, err = w.Write(data); err != nil {
+				logx.Errorf("write message err: %s", err.Error())
 			}
 			// 关闭写入器
 			if err := w.Close(); err != nil {
@@ -148,7 +149,7 @@ func (l *WebSocketClientLogic) WritePump() {
 			// 定期发送 Ping 消息
 			err := l.conn.SetWriteDeadline(time.Now().Add(time.Duration(l.svcCtx.Config.WebSocket.PingPeriod) * time.Second))
 			if err != nil {
-				log.Fatalf("SetWriteDeadline failed: %s", err.Error())
+				logx.Errorf("set write deadline err: %s", err.Error())
 			}
 			if err := l.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				return
