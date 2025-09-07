@@ -1,0 +1,32 @@
+syntax = "v1"
+
+info (
+	title:   "websocket模块"
+	desc:    "websocket模块"
+	author:  "张璇"
+	email:   "xatuzx2025@163.com"
+	version: "1.0"
+)
+
+type (
+	WebSocketReq {
+		ClientType string `from:"client_type"` // 连接的类型，ios等
+		Version    string `from:"version"` // 连接的版本号
+	}
+	WebSocketResp {
+		connectedId string `json:"connected_id"` // 服务器分配的连接ID
+	}
+)
+
+@server (
+	group:      websocket
+	timeout:    3s
+	maxBytes:   1048576
+	middleware: Middleware
+	jwt:        Auth
+)
+service user {
+	@handler WebSocketClient
+	get /websocket/client (WebSocketReq) returns (WebSocketResp)
+}
+

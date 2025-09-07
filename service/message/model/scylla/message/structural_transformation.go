@@ -7,7 +7,6 @@ func RpcModelToModel(messageInfo *message.MessageDetail) *Message {
 		MessageId:   messageInfo.GetMessageId(),
 		SessionId:   messageInfo.GetSessionId(),
 		SendId:      messageInfo.GetSendId(),
-		RecipientId: messageInfo.GetRecipientId(),
 		ReplyId:     messageInfo.GetReplyId(),
 		CreateTime:  messageInfo.GetCreateTime(),
 		UpdateTime:  messageInfo.GetUpdateTime(),
@@ -20,14 +19,13 @@ func RpcModelToModel(messageInfo *message.MessageDetail) *Message {
 
 func ModelToRpcModel(messageInfo *Message) *message.MessageDetail {
 	return &message.MessageDetail{
-		MessageId:   messageInfo.MessageId,
-		SessionId:   messageInfo.SessionId,
-		SendId:      messageInfo.SendId,
-		RecipientId: messageInfo.RecipientId,
-		ReplyId:     messageInfo.ReplyId,
-		CreateTime:  messageInfo.CreateTime,
-		UpdateTime:  messageInfo.UpdateTime,
-		Status:      messageInfo.Status,
+		MessageId:  messageInfo.MessageId,
+		SessionId:  messageInfo.SessionId,
+		SendId:     messageInfo.SendId,
+		ReplyId:    messageInfo.ReplyId,
+		CreateTime: messageInfo.CreateTime,
+		UpdateTime: messageInfo.UpdateTime,
+		Status:     messageInfo.Status,
 		Content: &message.MessageContent{
 			Text:        messageInfo.Text,
 			MessageType: messageInfo.MessageType,
