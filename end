@@ -1,12 +1,19 @@
 #!/usr/bin/env bash
 
+# 检查参数
+CLEAN_DATA=false
+if [[ "$1" == "--clean-data" ]] || [[ "$1" == "-c" ]]; then
+    CLEAN_DATA=true
+    echo "Data cleanup mode enabled."
+fi
+
 # 打印当前目录
 echo "Current directory: $(pwd)"
 
-## 停止并清理 Docker Compose 服务
-#echo "Stopping Docker Compose services..."
-#docker-compose down
-#echo "Docker Compose services stopped and cleaned."
+# 停止并清理 Docker Compose 服务
+echo "Stopping Docker Compose services..."
+docker-compose down
+echo "Docker Compose services stopped and cleaned."
 
 # 停止 etcd
 echo "Stopping etcd..."
@@ -56,4 +63,43 @@ clean_service "service/user/rpc"
 clean_service "service/post/api"
 clean_service "service/post/rpc"
 
+# 数据清理功能
+if [[ "$CLEAN_DATA" == true ]]; then
+    echo "Cleaning Docker data volumes..."
+
+    # 删除 Docker 数据目录
+    if [[ -d "./docker-data" ]]; then
+        echo "Removing Docker data directory..."
+        rm -rf ./docker-data
+        echo "Docker data directory removed."
+    else
+        echo "Docker data directory does not exist."
+    fi
+
+    # 删除 etcd 数据
+    if [[ -d "./etcd-data" ]]; then
+        echo "Removing etcd data directory..."
+        rm -rf ./etcd-data
+        echo "etcd data directory removed."
+    fi
+
+    # 删除日志文件
+    echo "Removing log files..."
+    rm -f *.log
+    rm -f service/*/*.log
+    rm -f service/*/*/*.log
+    echo "Log files removed."
+
+    echo "Data cleanup completed."
+fi
+
 echo "All services stopped and resources cleaned."
+
+# 使用说明
+if [[ "$CLEAN_DATA" == false ]]; then
+    echo ""
+    echo "Usage:"
+    echo "  ./end              # Stop services (keep data)"
+    echo "  ./end --clean-data # Stop services and clean all data"
+    echo "  ./end -c           # Stop services and clean all data (short option)"
+fi

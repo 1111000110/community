@@ -3,8 +3,74 @@
 # 打印当前目录
 echo "Current directory: $(pwd)"
 
-## 启动 Docker Compose 服务
-#docker-compose up -d
+# 启动 Docker Compose 服务
+echo "Starting Docker Compose services..."
+docker-compose up -d
+echo "Docker Compose services started."
+
+# 等待 Docker 服务启动完成
+echo "Waiting for Docker services to be ready..."
+echo "Waiting for MongoDB..."
+for i in {1..60}; do
+    if nc -z 127.0.0.1 27017; then
+        echo "MongoDB is ready."
+        break
+    else
+        echo "Waiting for MongoDB... ($i/60)"
+        sleep 2
+    fi
+done
+
+echo "Waiting for MySQL..."
+for i in {1..60}; do
+    if nc -z 127.0.0.1 3306; then
+        echo "MySQL is ready."
+        break
+    else
+        echo "Waiting for MySQL... ($i/60)"
+        sleep 2
+    fi
+done
+
+echo "Waiting for Redis..."
+for i in {1..60}; do
+    if nc -z 127.0.0.1 6379; then
+        echo "Redis is ready."
+        break
+    else
+        echo "Waiting for Redis... ($i/60)"
+        sleep 2
+    fi
+done
+
+echo "Waiting for Scylla..."
+for i in {1..60}; do
+    if nc -z 127.0.0.1 9042; then
+        echo "Scylla is ready."
+        break
+    else
+        echo "Waiting for Scylla... ($i/60)"
+        sleep 2
+    fi
+done
+
+echo "Waiting for Kafka..."
+for i in {1..60}; do
+    if nc -z 127.0.0.1 9092; then
+        echo "Kafka is ready."
+        break
+    else
+        echo "Waiting for Kafka... ($i/60)"
+        sleep 2
+    fi
+done
+
+# 如果关键服务未能启动，退出脚本
+if ! nc -z 127.0.0.1 27017 || ! nc -z 127.0.0.1 3306 || ! nc -z 127.0.0.1 6379; then
+    echo "Critical Docker services failed to start. Exiting..."
+    docker-compose down
+    exit 1
+fi
 
 # 启动 etcd 在后台运行，并将日志输出到文件
 etcd --data-dir=./etcd-data > etcd.log 2>&1 &
@@ -60,3 +126,8 @@ run_service "service/post/rpc"
 run_service "service/post/api"
 
 echo "All services started successfully."
+
+echo ""
+echo "To stop all services:"
+echo "  ./end              # Stop services (keep data)"
+echo "  ./end --clean-data # Stop services and clean all data"

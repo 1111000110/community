@@ -66,26 +66,25 @@ func (l *WebSocketClientLogic) GetType() int64 {
 func (l *WebSocketClientLogic) ReadPump() {
 	defer func() {
 		l.svcCtx.MessageHub.RemoveClient(l)
-		func() {
-			err := l.conn.Close()
-			if err != nil {
-				logx.Errorf("close websocket client conn err: %s", err.Error())
-			}
-		}()
 		close(l.sendBuffer)
 	}()
 	// 循环读取消息
 	for {
-		_, message, err := l.conn.ReadMessage()
-		if err != nil {
-			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				logx.Errorf("read message err: %s", err.Error())
+		select {
+		case <-l.ctx.Done():
+			return
+		default:
+			_, message, err := l.conn.ReadMessage()
+			if err != nil {
+				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+					logx.Errorf("read message err: %s", err.Error())
+				}
+				break
 			}
-			break
-		}
-		logx.Info(string(message))
-		if err = l.conn.WriteMessage(websocket.TextMessage, message); err != nil {
-			logx.Errorf("write message err: %s", err.Error())
+			logx.Info(string(message))
+			if err = l.conn.WriteMessage(websocket.TextMessage, message); err != nil {
+				logx.Errorf("write message err: %s", err.Error())
+			}
 		}
 	}
 }
