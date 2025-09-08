@@ -5,18 +5,21 @@ import (
 )
 
 const (
-	ios = iota
-	web
+	ConnTypeWeb  = 0
+	ConnTypeApp  = 1
+	ConnTypeMini = 2
 )
 
-func GetConnType(connType string) int64 {
-	switch connType {
-	case "ios":
-		return ios
+func GetConnType(clientType string) int64 {
+	switch clientType {
 	case "web":
-		return web
+		return ConnTypeWeb
+	case "app":
+		return ConnTypeApp
+	case "mini":
+		return ConnTypeMini
 	default:
-		return web
+		return ConnTypeWeb
 	}
 }
 
@@ -31,7 +34,7 @@ type Notification struct { // 发送的消息
 type Client interface {
 	GetType() int64                   // 获取客户端类型
 	GetClientId() int64               // 获取连接id
-	WritePump()                       // 写如函数
-	ReadPump()                        // 读取函数
 	GetSendBuffer() chan Notification // 自己的消息队列
+	Close()                           // 关闭
+	Start()                           //启动
 }

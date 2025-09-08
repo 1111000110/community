@@ -26,7 +26,7 @@ func NewUserQueryLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UserQue
 }
 
 func (l *UserQueryLogic) UserQuery(in *__.UserQueryReq) (*__.UserQueryResp, error) {
-	userData, err := l.svcCtx.MysqlClient.FindOne(l.ctx, in.UserId)
+	userData, err := l.svcCtx.Model.MysqlClient.FindOne(l.ctx, in.UserId)
 	if err != nil {
 		return nil, err
 	}

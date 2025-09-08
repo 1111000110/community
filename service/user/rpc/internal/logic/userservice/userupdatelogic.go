@@ -27,7 +27,7 @@ func NewUserUpdateLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UserUp
 
 func (l *UserUpdateLogic) UserUpdate(in *__.UserUpdateReq) (*__.UserUpdateResp, error) {
 	userData := in.GetUser()
-	data, err := l.svcCtx.MysqlClient.FindOne(l.ctx, userData.UserId)
+	data, err := l.svcCtx.Model.MysqlClient.FindOne(l.ctx, userData.UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (l *UserUpdateLogic) UserUpdate(in *__.UserUpdateReq) (*__.UserUpdateResp, 
 		data.Status = in.GetUser().GetStatus()
 	}
 	data.Ut = time.Now().Unix()
-	err = l.svcCtx.MysqlClient.Update(l.ctx, data)
+	err = l.svcCtx.Model.MysqlClient.Update(l.ctx, data)
 	if err != nil {
 		return nil, err
 	}

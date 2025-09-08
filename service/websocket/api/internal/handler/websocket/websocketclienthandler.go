@@ -1,7 +1,6 @@
 package websocket
 
 import (
-	"log"
 	"net/http"
 
 	"community.com/service/websocket/api/internal/logic/websocket"
@@ -29,14 +28,15 @@ func WebSocketClientHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 		conn, err := upGrader.Upgrade(w, r, nil) //升级Http为websocket
 		if err != nil {
-			log.Println(err)
+			httpx.ErrorCtx(r.Context(), w, err)
 			return
 		}
-		l := websocket.NewWebSocketClientLogic(r.Context(), svcCtx, &req, conn) // 获取一个消息连接
-		svcCtx.MessageHub.AddClient(l)                                          // 增加进消息中心
-		err = l.RunSocketClient()                                               // 启动消息处理
+		l, err := websocket.NewWebSocketClientLogic(r.Context(), svcCtx, &req, conn) // 获取一个消息连接
 		if err != nil {
-			panic(err)
+			httpx.ErrorCtx(r.Context(), w, err)
+			return
 		}
+		svcCtx.MessageHub.AddClient(l) // 增加进消息中心
+
 	}
 }

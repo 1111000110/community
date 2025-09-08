@@ -25,7 +25,7 @@ type (
 	middleware: Middleware
 	jwt:        Auth
 )
-service user {
+service websocket {
 	@handler WebSocketClient
 	get /websocket/client (WebSocketReq) returns (WebSocketResp)
 }

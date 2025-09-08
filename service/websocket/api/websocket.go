@@ -1,31 +1,36 @@
 package main
 
 import (
-	"flag"
-	"fmt"
-
 	"community.com/service/websocket/api/internal/config"
 	"community.com/service/websocket/api/internal/handler"
 	"community.com/service/websocket/api/internal/svc"
+	"flag"
+	"fmt"
+	"github.com/zeromicro/go-zero/core/service"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/rest"
 )
 
-var configFile = flag.String("f", "etc/user.yaml", "the config file")
+var configFile = flag.String("f", "etc/websocket.yaml", "the config file")
 
 func main() {
 	flag.Parse()
 
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
+	serviceGroup := service.NewServiceGroup() // 服务组
+	defer serviceGroup.Stop()
 
 	server := rest.MustNewServer(c.RestConf)
-	defer server.Stop()
 	ctx := svc.NewServiceContext(c)
-	go ctx.MessageHub.Run() // 启动消息中心
 	handler.RegisterHandlers(server, ctx)
+	serviceGroup.Add(ctx.MessageHub)       // 消息中心服务
+	for _, mq := range ctx.KafkaConsumer { // kafka消费组
+		serviceGroup.Add(mq)
+	}
+	serviceGroup.Add(server) // http服务
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
-	server.Start()
+	serviceGroup.Start()
 }

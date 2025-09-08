@@ -34,7 +34,7 @@ func (l *UserLoginLogic) UserLogin(in *__.UserLoginReq) (*__.UserLoginResp, erro
 		return &__.UserLoginResp{}, errors.Errorf("手机号和id不能同时为空")
 	}
 	if userId != 0 {
-		userData, err := l.svcCtx.MysqlClient.FindOne(l.ctx, userId)
+		userData, err := l.svcCtx.Model.MysqlClient.FindOne(l.ctx, userId)
 		if err != nil {
 			return &__.UserLoginResp{}, err
 		}
@@ -47,7 +47,7 @@ func (l *UserLoginLogic) UserLogin(in *__.UserLoginReq) (*__.UserLoginResp, erro
 		if err != nil {
 			return &__.UserLoginResp{}, err
 		}
-		userData, err := l.svcCtx.MysqlClient.FindOneByPhone(l.ctx, aesPhone)
+		userData, err := l.svcCtx.Model.MysqlClient.FindOneByPhone(l.ctx, aesPhone)
 		if err != nil {
 			return &__.UserLoginResp{}, err
 		}

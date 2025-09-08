@@ -6,7 +6,8 @@ MongoConf:
 RedisConf:
   Community: redis:6379:123456
 KafkaConf:
-  Community: kafka:9092
+  Community:
+    - kafka:9092
 ScyllaConf:
   # 集群节点列表（Docker内部用容器名，宿主机用localhost:端口）
   Hosts:
