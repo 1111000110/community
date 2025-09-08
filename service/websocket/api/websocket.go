@@ -14,6 +14,7 @@ import (
 
 var configFile = flag.String("f", "etc/websocket.yaml", "the config file")
 
+// todo 可能不安全 记得处理
 func main() {
 	flag.Parse()
 
