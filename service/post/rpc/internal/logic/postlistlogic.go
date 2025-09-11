@@ -1,11 +1,11 @@
 package logic
 
 import (
-	model "community.com/service/post/model/mongo/post"
+	model "community/service/post/model/mongo/post"
 	"context"
 
-	"community.com/service/post/rpc/internal/svc"
-	"community.com/service/post/rpc/pb"
+	"community/service/post/rpc/internal/svc"
+	"community/service/post/rpc/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )

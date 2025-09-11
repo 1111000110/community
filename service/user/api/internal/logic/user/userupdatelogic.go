@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"community.com/pkg/tool"
-	"community.com/service/user/api/internal/svc"
-	"community.com/service/user/api/internal/types"
-	"community.com/service/user/rpc/client/userservice"
+	"community/pkg/tool"
+	"community/service/user/api/internal/svc"
+	"community/service/user/api/internal/types"
+	"community/service/user/rpc/client/userservice"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )

@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"community.com/pkg/feishu"
-	"community.com/pkg/kimi"
+	"community/pkg/feishu"
+	"community/pkg/kimi"
 )
 
 // 用户配置结构

@@ -7,9 +7,9 @@ package server
 import (
 	"context"
 
-	"community.com/service/user/rpc/internal/logic/relationsservice"
-	"community.com/service/user/rpc/internal/svc"
-	"community.com/service/user/rpc/pb"
+	"community/service/user/rpc/internal/logic/relationsservice"
+	"community/service/user/rpc/internal/svc"
+	"community/service/user/rpc/pb"
 )
 
 type RelationsServiceServer struct {

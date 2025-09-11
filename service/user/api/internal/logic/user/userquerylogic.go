@@ -1,13 +1,13 @@
 package user
 
 import (
-	"community.com/pkg/tool"
-	"community.com/service/user/rpc/client/userservice"
+	"community/pkg/tool"
+	"community/service/user/rpc/client/userservice"
 	"context"
 	"github.com/pkg/errors"
 
-	"community.com/service/user/api/internal/svc"
-	"community.com/service/user/api/internal/types"
+	"community/service/user/api/internal/svc"
+	"community/service/user/api/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )

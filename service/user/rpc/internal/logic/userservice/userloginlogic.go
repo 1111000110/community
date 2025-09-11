@@ -1,9 +1,9 @@
 package userservicelogic
 
 import (
-	"community.com/pkg/tool"
-	"community.com/service/user/rpc/internal/svc"
-	"community.com/service/user/rpc/pb"
+	"community/pkg/tool"
+	"community/service/user/rpc/internal/svc"
+	"community/service/user/rpc/pb"
 	"context"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"

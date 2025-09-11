@@ -1,8 +1,8 @@
 package svc
 
 import (
-	"community.com/service/user/api/internal/config"
-	"community.com/service/user/rpc/client/userservice"
+	"community/service/user/api/internal/config"
+	"community/service/user/rpc/client/userservice"
 	"github.com/zeromicro/go-zero/zrpc"
 )
 

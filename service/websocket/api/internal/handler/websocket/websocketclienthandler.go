@@ -3,9 +3,9 @@ package websocket
 import (
 	"net/http"
 
-	"community.com/service/websocket/api/internal/logic/websocket"
-	"community.com/service/websocket/api/internal/svc"
-	"community.com/service/websocket/api/internal/types"
+	"community/service/websocket/api/internal/logic/websocket"
+	"community/service/websocket/api/internal/svc"
+	"community/service/websocket/api/internal/types"
 	websocketclient "github.com/gorilla/websocket"
 	"github.com/zeromicro/go-zero/rest/httpx"
 )

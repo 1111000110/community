@@ -7,7 +7,7 @@ package reviewservice
 import (
 	"context"
 
-	"community.com/infra/review/rpc/pb"
+	"community/infra/review/rpc/pb"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"

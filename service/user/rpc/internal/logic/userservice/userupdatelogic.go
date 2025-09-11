@@ -1,12 +1,12 @@
 package userservicelogic
 
 import (
-	"community.com/pkg/tool"
+	"community/pkg/tool"
 	"context"
 	"time"
 
-	"community.com/service/user/rpc/internal/svc"
-	"community.com/service/user/rpc/pb"
+	"community/service/user/rpc/internal/svc"
+	"community/service/user/rpc/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )

@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	relations "community.com/service/user/api/internal/handler/relations"
-	user "community.com/service/user/api/internal/handler/user"
-	"community.com/service/user/api/internal/svc"
+	relations "community/service/user/api/internal/handler/relations"
+	user "community/service/user/api/internal/handler/user"
+	"community/service/user/api/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
 )

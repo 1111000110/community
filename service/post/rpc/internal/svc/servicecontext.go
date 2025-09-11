@@ -1,7 +1,7 @@
 package svc
 
 import (
-	"community.com/service/post/rpc/internal/config"
+	"community/service/post/rpc/internal/config"
 )
 
 type ServiceContext struct {

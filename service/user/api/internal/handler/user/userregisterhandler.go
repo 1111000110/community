@@ -1,10 +1,10 @@
 package user
 
 import (
-	"community.com/pkg/message"
-	"community.com/service/user/api/internal/logic/user"
-	"community.com/service/user/api/internal/svc"
-	"community.com/service/user/api/internal/types"
+	"community/pkg/message"
+	"community/service/user/api/internal/logic/user"
+	"community/service/user/api/internal/svc"
+	"community/service/user/api/internal/types"
 	"github.com/zeromicro/go-zero/rest/httpx"
 	"net/http"
 )

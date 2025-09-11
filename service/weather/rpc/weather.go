@@ -4,10 +4,10 @@ import (
 	"flag"
 	"fmt"
 
-	"community.com/service/weather/rpc/internal/config"
-	weatherserviceServer "community.com/service/weather/rpc/internal/server/weatherservice"
-	"community.com/service/weather/rpc/internal/svc"
-	"community.com/service/weather/rpc/pb"
+	"community/service/weather/rpc/internal/config"
+	weatherserviceServer "community/service/weather/rpc/internal/server/weatherservice"
+	"community/service/weather/rpc/internal/svc"
+	"community/service/weather/rpc/pb"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"

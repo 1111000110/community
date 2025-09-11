@@ -1,7 +1,7 @@
 package svc
 
 import (
-	"community.com/conf/databases/kafka"
+	"community/conf/databases/kafka"
 	"github.com/zeromicro/go-queue/kq"
 )
 

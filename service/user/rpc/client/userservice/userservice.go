@@ -7,7 +7,7 @@ package userservice
 import (
 	"context"
 
-	"community.com/service/user/rpc/pb"
+	"community/service/user/rpc/pb"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"

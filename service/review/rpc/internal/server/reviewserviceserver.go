@@ -7,9 +7,9 @@ package server
 import (
 	"context"
 
-	"community.com/infra/review/rpc/internal/logic"
-	"community.com/infra/review/rpc/internal/svc"
-	"community.com/infra/review/rpc/pb"
+	"community/infra/review/rpc/internal/logic"
+	"community/infra/review/rpc/internal/svc"
+	"community/infra/review/rpc/pb"
 )
 
 type ReviewServiceServer struct {

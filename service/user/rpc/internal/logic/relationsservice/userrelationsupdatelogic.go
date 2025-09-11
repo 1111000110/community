@@ -3,8 +3,8 @@ package relationsservicelogic
 import (
 	"context"
 
-	"community.com/service/user/rpc/internal/svc"
-	"community.com/service/user/rpc/pb"
+	"community/service/user/rpc/internal/svc"
+	"community/service/user/rpc/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )

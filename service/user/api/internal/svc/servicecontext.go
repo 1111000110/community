@@ -1,8 +1,8 @@
 package svc
 
 import (
-	"community.com/service/user/api/internal/config"
-	"community.com/service/user/api/internal/middleware"
+	"community/service/user/api/internal/config"
+	"community/service/user/api/internal/middleware"
 	"github.com/zeromicro/go-zero/rest"
 )
 

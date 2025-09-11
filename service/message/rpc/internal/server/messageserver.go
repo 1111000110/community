@@ -7,9 +7,9 @@ package server
 import (
 	"context"
 
-	"community.com/service/message/rpc/internal/logic"
-	"community.com/service/message/rpc/internal/svc"
-	"community.com/service/message/rpc/pb"
+	"community/service/message/rpc/internal/logic"
+	"community/service/message/rpc/internal/svc"
+	"community/service/message/rpc/pb"
 )
 
 type MessageServer struct {

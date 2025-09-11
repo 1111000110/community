@@ -3,8 +3,8 @@ package relations
 import (
 	"context"
 
-	"community.com/service/user/api/internal/svc"
-	"community.com/service/user/api/internal/types"
+	"community/service/user/api/internal/svc"
+	"community/service/user/api/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )

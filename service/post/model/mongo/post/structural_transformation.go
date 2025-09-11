@@ -1,7 +1,7 @@
 package model
 
 import (
-	"community.com/service/post/rpc/postservice"
+	"community/service/post/rpc/postservice"
 )
 
 func RpcPostToPost(post *postservice.Post) *Post {

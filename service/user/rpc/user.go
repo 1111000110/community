@@ -4,11 +4,11 @@ import (
 	"flag"
 	"fmt"
 
-	"community.com/service/user/rpc/internal/config"
-	relationsserviceServer "community.com/service/user/rpc/internal/server/relationsservice"
-	userserviceServer "community.com/service/user/rpc/internal/server/userservice"
-	"community.com/service/user/rpc/internal/svc"
-	"community.com/service/user/rpc/pb"
+	"community/service/user/rpc/internal/config"
+	relationsserviceServer "community/service/user/rpc/internal/server/relationsservice"
+	userserviceServer "community/service/user/rpc/internal/server/userservice"
+	"community/service/user/rpc/internal/svc"
+	"community/service/user/rpc/pb"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"

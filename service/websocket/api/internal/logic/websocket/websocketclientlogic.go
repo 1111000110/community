@@ -6,10 +6,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"community.com/pkg/tool"
-	"community.com/service/websocket/api/internal/hub"
-	"community.com/service/websocket/api/internal/svc"
-	"community.com/service/websocket/api/internal/types"
+	"community/pkg/tool"
+	"community/service/websocket/api/internal/hub"
+	"community/service/websocket/api/internal/svc"
+	"community/service/websocket/api/internal/types"
 	"github.com/gorilla/websocket"
 	"github.com/zeromicro/go-zero/core/logx"
 )

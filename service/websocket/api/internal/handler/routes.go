@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	websocket "community.com/service/websocket/api/internal/handler/websocket"
-	"community.com/service/websocket/api/internal/svc"
+	websocket "community/service/websocket/api/internal/handler/websocket"
+	"community/service/websocket/api/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
 )

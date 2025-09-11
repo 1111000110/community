@@ -1,9 +1,9 @@
 package main
 
 import (
-	"community.com/service/websocket/api/internal/config"
-	"community.com/service/websocket/api/internal/handler"
-	"community.com/service/websocket/api/internal/svc"
+	"community/service/websocket/api/internal/config"
+	"community/service/websocket/api/internal/handler"
+	"community/service/websocket/api/internal/svc"
 	"flag"
 	"fmt"
 	"github.com/zeromicro/go-zero/core/service"

@@ -1,6 +1,6 @@
 package user
 
-import "community.com/service/user/rpc/client/userservice"
+import "community/service/user/rpc/client/userservice"
 
 func ModelUserToUser(user *userservice.User) *User {
 	return &User{

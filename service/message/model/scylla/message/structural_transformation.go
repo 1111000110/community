@@ -1,6 +1,6 @@
 package message
 
-import "community.com/service/message/rpc/message"
+import "community/service/message/rpc/message"
 
 func RpcModelToModel(messageInfo *message.MessageDetail) *Message {
 	return &Message{

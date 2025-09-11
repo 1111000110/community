@@ -1,10 +1,10 @@
 package svc
 
 import (
-	"community.com/conf/databases/kafka"
-	"community.com/service/websocket/api/internal/config"
-	"community.com/service/websocket/api/internal/hub"
-	"community.com/service/websocket/api/internal/middleware"
+	"community/conf/databases/kafka"
+	"community/service/websocket/api/internal/config"
+	"community/service/websocket/api/internal/hub"
+	"community/service/websocket/api/internal/middleware"
 	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/rest"
 )

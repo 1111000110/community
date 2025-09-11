@@ -1,8 +1,8 @@
 package user
 
 import (
-	"community.com/service/user/api/internal/svc"
-	"community.com/service/user/api/internal/types"
+	"community/service/user/api/internal/svc"
+	"community/service/user/api/internal/types"
 	"context"
 
 	"github.com/zeromicro/go-zero/core/logx"

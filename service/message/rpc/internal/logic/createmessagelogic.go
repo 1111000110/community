@@ -1,12 +1,12 @@
 package logic
 
 import (
-	"community.com/pkg/snowflakes"
-	"community.com/service/message/model/scylla/message"
+	"community/pkg/snowflakes"
+	"community/service/message/model/scylla/message"
 	"context"
 
-	"community.com/service/message/rpc/internal/svc"
-	"community.com/service/message/rpc/pb"
+	"community/service/message/rpc/internal/svc"
+	"community/service/message/rpc/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )

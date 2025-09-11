@@ -7,7 +7,7 @@ package message
 import (
 	"context"
 
-	"community.com/service/message/rpc/pb"
+	"community/service/message/rpc/pb"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"

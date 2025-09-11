@@ -1,6 +1,6 @@
 package svc
 
-import model "community.com/service/post/model/mongo/post"
+import model "community/service/post/model/mongo/post"
 
 type ModelClient struct {
 	PostMongoClient model.PostModel

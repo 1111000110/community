@@ -1,7 +1,7 @@
 package model
 
 import (
-	"community.com/conf/databases/mongo"
+	"community/conf/databases/mongo"
 	"context"
 	"github.com/zeromicro/go-zero/core/stores/mon"
 	"go.mongodb.org/mongo-driver/bson"

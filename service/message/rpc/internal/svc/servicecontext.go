@@ -1,9 +1,9 @@
 package svc
 
 import (
-	"community.com/conf/databases/scylla"
-	"community.com/service/message/model/scylla/message"
-	"community.com/service/message/rpc/internal/config"
+	"community/conf/databases/scylla"
+	"community/service/message/model/scylla/message"
+	"community/service/message/rpc/internal/config"
 )
 
 type ServiceContext struct {

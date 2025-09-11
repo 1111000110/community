@@ -1,8 +1,8 @@
 package svc
 
 import (
-	"community.com/conf/databases/mysql"
-	"community.com/service/user/model/mysql/user"
+	"community/conf/databases/mysql"
+	"community/service/user/model/mysql/user"
 )
 
 type ModelClient struct {
