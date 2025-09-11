@@ -1,12 +1,12 @@
 package Public
 
 import (
-	"community.com/service/post/rpc/postservice"
-	"community.com/service/user/rpc/client/userservice"
+	"community/service/post/rpc/postservice"
+	"community/service/user/rpc/client/userservice"
 	"context"
 
-	"community.com/service/post/api/internal/svc"
-	"community.com/service/post/api/internal/types"
+	"community/service/post/api/internal/svc"
+	"community/service/post/api/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )

@@ -3,8 +3,8 @@ package Post
 import (
 	"context"
 
-	"community.com/service/post/api/internal/svc"
-	"community.com/service/post/api/internal/types"
+	"community/service/post/api/internal/svc"
+	"community/service/post/api/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )

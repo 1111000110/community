@@ -1,8 +1,8 @@
 package Public
 
 import (
-	"community.com/service/post/api/internal/svc"
-	"community.com/service/post/api/internal/types"
+	"community/service/post/api/internal/svc"
+	"community/service/post/api/internal/types"
 	"context"
 	"github.com/zeromicro/go-zero/core/logx"
 )

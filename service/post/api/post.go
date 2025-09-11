@@ -4,9 +4,9 @@ import (
 	"flag"
 	"fmt"
 
-	"community.com/service/post/api/internal/config"
-	"community.com/service/post/api/internal/handler"
-	"community.com/service/post/api/internal/svc"
+	"community/service/post/api/internal/config"
+	"community/service/post/api/internal/handler"
+	"community/service/post/api/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/rest"
