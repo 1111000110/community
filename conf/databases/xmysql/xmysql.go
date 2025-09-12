@@ -1,4 +1,4 @@
-package mysql
+package xmysql
 
 import (
 	"github.com/zeromicro/go-zero/core/conf"

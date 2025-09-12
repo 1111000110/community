@@ -1,4 +1,4 @@
-package kafka
+package xkafka
 
 import (
 	"context"
@@ -8,9 +8,9 @@ import (
 )
 
 type Config struct {
-	kafkaConfig KafkaConfig
+	KafkaConf KafkaConf
 }
-type KafkaConfig struct {
+type KafkaConf struct {
 	Community []string
 }
 
@@ -21,9 +21,13 @@ func init() {
 	conf.MustLoad(configFile, &c)
 }
 
+// 生产方
+
 func GetKafkaClient(topic string) *kq.Pusher {
-	return kq.NewPusher(c.kafkaConfig.Community, topic)
+	return kq.NewPusher(c.KafkaConf.Community, topic)
 }
+
+// 消费方
 
 type Consumer interface { // 消费方实现此处理接口
 	Consume(ctx context.Context, key, value string) error
@@ -31,7 +35,7 @@ type Consumer interface { // 消费方实现此处理接口
 
 func DefaultConsumer(group string, topic string, consumer Consumer) []service.Service {
 	return GetKafkaConsumer(kq.KqConf{
-		Brokers: c.kafkaConfig.Community,
+		Brokers: c.KafkaConf.Community,
 		Group:   group,
 		Topic:   topic,
 	}, consumer)

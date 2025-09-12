@@ -3,6 +3,7 @@ package message
 import (
 	"context"
 	"fmt"
+
 	"github.com/gocql/gocql"
 	"github.com/pkg/errors"
 )

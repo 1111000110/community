@@ -32,15 +32,7 @@ func CreateTokenByAll(userID int64, duration time.Duration, SecretKey string) (s
 }
 
 func CreateTokenByUserID(userID int64) (string, error) {
-	claims := CustomClaims{
-		UserID: userID,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(DefaultDuration)),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(DefaultSecretKey)) // 将 SecretKey 转换为 []byte
+	return CreateTokenByAll(userID, DefaultDuration, DefaultSecretKey)
 }
 
 func GetUserId(ctx context.Context) (int64, error) {

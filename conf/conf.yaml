@@ -4,15 +4,19 @@ MongoConf:
   Community: mongodb://root:123456@mongo:27017/
   Db: Community
 RedisConf:
-  Community: redis:6379:123456
+  Host: "127.0.0.1:6379"    # 对应结构体 Host 字段（主机地址:端口）
+  Type: "node"              # 对应结构体 Type 字段（部署类型，如单机node/集群cluster）
+  Pass: "123456"            # 对应结构体 Pass 字段（Redis连接密码）
+  Tls: false                # 对应结构体 Tls 字段（是否启用TLS加密）
+  AppendOnly: true          # 对应结构体 AppendOnly 字段（是否开启AOF持久化）
 KafkaConf:
   Community:
-    - kafka:9092
+    - localhost:9092
 ScyllaConf:
   # 集群节点列表（Docker内部用容器名，宿主机用localhost:端口）
   Hosts:
     - "scylla-node1:9042"
     - "scylla-node2:9042"
   Keyspace: community
-  Consistency: "quorum"# 一致性级别
+  Consistency: "quorum" # 一致性级别
   Timeout: 10 # 和超时设置

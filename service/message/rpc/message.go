@@ -8,7 +8,6 @@ import (
 	"community/service/message/rpc/internal/server"
 	"community/service/message/rpc/internal/svc"
 	"community/service/message/rpc/pb"
-
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/service"
 	"github.com/zeromicro/go-zero/zrpc"

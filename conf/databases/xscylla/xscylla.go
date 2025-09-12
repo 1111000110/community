@@ -1,4 +1,4 @@
-package scylla
+package xscylla
 
 import (
 	"fmt"

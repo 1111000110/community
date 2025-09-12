@@ -1,12 +1,14 @@
 package websocket
 
 import (
+	"community/pkg/snowflakes"
+	"community/pkg/xstring"
 	"context"
 	"encoding/json"
+	"fmt"
 	"sync/atomic"
 	"time"
 
-	"community/pkg/tool"
 	"community/service/websocket/api/internal/hub"
 	"community/service/websocket/api/internal/svc"
 	"community/service/websocket/api/internal/types"
@@ -20,23 +22,27 @@ type WebSocketClientLogic struct {
 	svcCtx       *svc.ServiceContext
 	cancel       context.CancelFunc    // 取消内部上下文（控制读写协程退出）
 	userId       int64                 // 客户端唯一标识
+	connType     int64                 // 连接类型
 	sendBuffer   chan hub.Notification // 消息发送缓冲区
 	bufferClosed atomic.Bool           // 标记sendBuffer是否已关闭（防止重复close panic）
 	conn         *websocket.Conn       // WebSocket连接实例
-	connType     int64                 // 连接类型
-
 }
 
-func NewWebSocketClientLogic(ctx context.Context, svcCtx *svc.ServiceContext, req *types.WebSocketReq, conn *websocket.Conn) (*WebSocketClientLogic, error) {
+func NewWebSocketClientLogic(_ context.Context, svcCtx *svc.ServiceContext, req *types.WebSocketReq, conn *websocket.Conn) (*WebSocketClientLogic, error) {
 	// 1. 获取用户ID
-	userId, err := tool.GetUserId(ctx)
+	//userId, err := tool.GetUserId(ctx) todo
+	snowflake, err := snowflakes.NewSnowflake(1, 1)
+	if err != nil {
+		return nil, err
+	}
+	userId, err := snowflake.NextID()
 	if err != nil {
 		logx.Errorf("failed to get user ID: %v", err)
 		return nil, err
 	}
 
 	// 2. 创建可取消上下文（控制读写协程生命周期）
-	innerCtx, cancel := context.WithCancel(ctx)
+	innerCtx, cancel := context.WithCancel(context.Background())
 
 	// 3. 初始化WebSocket连接参数（读限制、读超时）
 	conn.SetReadLimit(svcCtx.Config.WebSocket.MaxMessageSize)
@@ -46,17 +52,8 @@ func NewWebSocketClientLogic(ctx context.Context, svcCtx *svc.ServiceContext, re
 		return nil, err
 	}
 
-	// 4. 注册Pong回调（重置读超时，维持连接）
-	conn.SetPongHandler(func(_ string) error {
-		if err = conn.SetReadDeadline(time.Now().Add(time.Duration(svcCtx.Config.WebSocket.PongWait) * time.Second)); err != nil {
-			logx.Errorf("failed to reset read deadline in PongHandler (userId: %d): %v", userId, err)
-			return err
-		}
-		return nil
-	})
-
-	// 5. 返回客户端实例
-	return &WebSocketClientLogic{
+	// 4. 返回客户端实例
+	resp := &WebSocketClientLogic{
 		Logger:       logx.WithContext(innerCtx),
 		ctx:          innerCtx,
 		cancel:       cancel,
@@ -66,7 +63,17 @@ func NewWebSocketClientLogic(ctx context.Context, svcCtx *svc.ServiceContext, re
 		userId:       userId,
 		connType:     hub.GetConnType(req.ClientType),
 		bufferClosed: atomic.Bool{}, // 初始为false（未关闭）
-	}, nil
+	}
+	// 5. 注册Pong回调（重置读超时，维持连接）
+	resp.conn.SetPongHandler(func(_ string) error {
+		if err = resp.conn.SetReadDeadline(time.Now().Add(time.Duration(resp.svcCtx.Config.WebSocket.PongWait) * time.Second)); err != nil {
+			logx.Errorf("failed to reset read deadline in PongHandler (userId: %d): %v", userId, err)
+			return err
+		}
+		err = resp.ResetRedis() // 重刷redis
+		return err
+	})
+	return resp, nil
 }
 
 func (l *WebSocketClientLogic) GetClientId() int64 {
@@ -81,11 +88,28 @@ func (l *WebSocketClientLogic) GetType() int64 {
 	return l.connType
 }
 
+func (l *WebSocketClientLogic) getRedisKeyName() string {
+	return fmt.Sprintf("websocket_client:{%s}", xstring.IntToString(l.userId))
+}
+
+func (l *WebSocketClientLogic) ResetRedis() error {
+	err := l.svcCtx.Model.RedisClient.Setex(
+		l.getRedisKeyName(),
+		"node1", // todo 修改机器
+		int(hub.Timeout.Seconds()),
+	)
+	if err != nil {
+		logx.Errorf("reset redis failed: %v", err)
+	}
+	logx.Infof("reset redis success")
+	return err
+}
+
 func (l *WebSocketClientLogic) ReadPump() {
 	for {
 		select {
 		case <-l.ctx.Done(): // 上下文取消（如Close()被调用）
-			logx.Infof("ReadPump exited (ctx done), userId: %d", l.userId)
+			logx.Infof("ReadPump exited (ctx done), userId: %d,closeErr: %s ", l.userId, l.ctx.Err())
 			return
 		default:
 			// 读取WebSocket消息（文本/二进制）
@@ -105,15 +129,33 @@ func (l *WebSocketClientLogic) ReadPump() {
 				continue
 			}
 
-			// 读取成功：示例为「消息回显」，可替换为业务逻辑（如转发到Hub）
-			logx.Infof("received message (userId: %d): %s", l.userId, string(message))
-			if err := l.conn.WriteMessage(websocket.TextMessage, message); err != nil {
-				logx.Errorf("failed to echo message (userId: %d): %v", l.userId, err)
-				// 写入失败若为致命错误，触发注销
-				if isFatalWriteErr(err) {
-					l.svcCtx.MessageHub.RemoveClient(l)
-					return
-				}
+			//// 读取成功：示例为「消息回显」，可替换为业务逻辑（如转发到Hub）
+			//logx.Infof("received message (userId: %d): %s", l.userId, string(message))
+			//if err := l.conn.WriteMessage(websocket.TextMessage, message); err != nil {
+			//	logx.Errorf("failed to echo message (userId: %d): %v", l.userId, err)
+			//	// 写入失败若为致命错误，触发注销
+			//	if isFatalWriteErr(err) {
+			//		l.svcCtx.MessageHub.RemoveClient(l)
+			//		return
+			//	}
+			//}
+			// todo
+			dynamicBytes, err := json.Marshal(message)
+			if err != nil {
+				panic(err)
+			}
+			notification := &hub.Notification{
+				ConnId: xstring.StringToIntOrZero[int64](string(message)),
+				Type:   "message",
+				Data:   dynamicBytes,
+			}
+			info, err := json.Marshal(notification)
+			if err != nil {
+				panic(err)
+			}
+			err = l.svcCtx.Model.KafkaMessageClient.Push(l.ctx, string(info))
+			if err != nil {
+				logx.Errorf(err.Error())
 			}
 		}
 	}
@@ -198,21 +240,21 @@ func (l *WebSocketClientLogic) WritePump() {
 
 		// 3. 上下文取消（如Close()被调用）
 		case <-l.ctx.Done():
-			logx.Infof("WritePump exited (ctx done), userId: %d", l.userId)
+			logx.Infof("WritePump exited (ctx done), userId: %d, closeErr: %s ", l.userId, l.ctx.Err())
 			return
 		}
 	}
 }
 
-func (l *WebSocketClientLogic) Start() {
+func (l *WebSocketClientLogic) Start() error {
 	logx.Infof("starting websocket client (userId: %d, connType: %d)", l.userId, l.connType)
 	go l.ReadPump()  // 启动读协程
 	go l.WritePump() // 启动写协程
+	return l.ResetRedis()
 }
 
 func (l *WebSocketClientLogic) Close() {
 	logx.Infof("closing websocket client (userId: %d)", l.userId)
-
 	// 1. 取消上下文（终止读写协程，幂等操作）
 	l.cancel()
 

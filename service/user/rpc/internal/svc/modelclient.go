@@ -1,7 +1,7 @@
 package svc
 
 import (
-	"community/conf/databases/mysql"
+	"community/conf/databases/xmysql"
 	"community/service/user/model/mysql/user"
 )
 
@@ -11,6 +11,6 @@ type ModelClient struct {
 
 func DefaultModelClient() *ModelClient {
 	return &ModelClient{
-		MysqlClient: user.NewUserModel(mysql.GetMysqlCommunityClient()),
+		MysqlClient: user.NewUserModel(xmysql.GetMysqlCommunityClient()),
 	}
 }

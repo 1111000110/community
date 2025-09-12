@@ -107,7 +107,9 @@ func (h *Hub) handleRegister(node *Node, client Client, nodeIndex int) {
 		node.Clients[connType][client.GetClientId()] = client
 		logx.Debugf("Client %d registered in node %d, type %d",
 			client.GetClientId(), nodeIndex, connType)
-		client.Start()
+		if err := client.Start(); err != nil {
+			client.Close()
+		}
 	} else {
 		logx.Errorf("Invalid connection type %d for client %d", connType, client.GetClientId())
 		client.Close()
@@ -211,6 +213,7 @@ func (h *Hub) Stop() {
 // AddClient 添加客户端到对应的分片节点
 func (h *Hub) AddClient(client Client) {
 	if h.stopped.Load() {
+		logx.Info("Hub stopped")
 		client.Close()
 		return
 	}
@@ -285,7 +288,7 @@ func (h *Hub) Consume(_ context.Context, key, val string) error {
 		logx.Errorf("Failed to unmarshal message: %v", err)
 		return err
 	}
-
+	logx.Infof(message.Type, message.ConnId, message.Data)
 	h.AddMessage(&message)
 	return nil
 }

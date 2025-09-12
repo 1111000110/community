@@ -2,12 +2,17 @@ package hub
 
 import (
 	"encoding/json"
+	"time"
 )
 
 const (
 	ConnTypeWeb  = 0
 	ConnTypeApp  = 1
 	ConnTypeMini = 2
+)
+
+const (
+	Timeout = 30 * time.Second
 )
 
 func GetConnType(clientType string) int64 {
@@ -36,5 +41,5 @@ type Client interface {
 	GetClientId() int64               // 获取连接id
 	GetSendBuffer() chan Notification // 自己的消息队列
 	Close()                           // 关闭
-	Start()                           //启动
+	Start() error                     // 启动
 }

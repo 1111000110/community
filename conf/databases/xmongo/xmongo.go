@@ -1,4 +1,4 @@
-package mongo
+package xmongo
 
 import (
 	"github.com/zeromicro/go-zero/core/conf"

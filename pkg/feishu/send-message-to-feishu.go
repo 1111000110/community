@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -29,14 +29,20 @@ func SendStringToFeishu(url string, text string) error {
 	}
 
 	// 发送POST请求
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(messageJSON))
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(messageJSON))
+	if err != nil {
+		return fmt.Errorf("创建请求失败: %v", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("发送消息到飞书失败: %v", err)
 	}
 	defer resp.Body.Close()
 
 	// 读取响应内容
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("读取飞书响应失败: %v", err)
 	}

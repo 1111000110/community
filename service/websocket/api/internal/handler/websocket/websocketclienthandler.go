@@ -37,6 +37,5 @@ func WebSocketClientHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			return
 		}
 		svcCtx.MessageHub.AddClient(l) // 增加进消息中心
-
 	}
 }

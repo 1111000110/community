@@ -19,11 +19,10 @@ type (
 )
 
 @server (
-	group:      websocket
-	timeout:    3s
-	maxBytes:   1048576
-	middleware: Middleware
-	jwt:        Auth
+	group:    websocket
+	timeout:  3s
+	maxBytes: 1048576
+	jwt: Auth
 )
 service websocket {
 	@handler WebSocketClient

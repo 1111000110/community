@@ -61,7 +61,7 @@ func NewPostModel(url, db, collection string) PostModel {
 
 // NewCommunityModel returns a community model for the mongo. It's Zhang Xuan's local model.
 func NewCommunityModel(collection string) PostModel {
-	conn := mongo.GetMongoCommunityClient(collection)
+	conn := xmongo.GetMongoCommunityClient(collection)
 	return &customPostModel{
 		defaultPostModel: newDefaultPostModel(conn),
 	}

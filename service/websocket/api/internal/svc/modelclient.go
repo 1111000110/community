@@ -1,16 +1,21 @@
 package svc
 
 import (
-	"community/conf/databases/kafka"
+	"community/conf/databases/xkafka"
+	"community/conf/databases/xredis"
+
 	"github.com/zeromicro/go-queue/kq"
+	"github.com/zeromicro/go-zero/core/stores/redis"
 )
 
 type ModelClient struct {
 	KafkaMessageClient *kq.Pusher
+	RedisClient        *redis.Redis
 }
 
 func DefaultModelClient() *ModelClient {
 	return &ModelClient{
-		KafkaMessageClient: kafka.GetKafkaClient("message"), // 获取topic为消息的客户端
+		KafkaMessageClient: xkafka.GetKafkaClient("message"), // 获取topic为消息的客户端
+		RedisClient:        xredis.GetRedisCommunityClient(),
 	}
 }

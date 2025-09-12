@@ -1,4 +1,4 @@
-package redis
+package xredis
 
 import (
 	"github.com/zeromicro/go-zero/core/conf"
@@ -6,10 +6,7 @@ import (
 )
 
 type Config struct {
-	RedisConf RedisConfig
-}
-type RedisConfig struct {
-	Community string
+	RedisConf redis.RedisConf
 }
 
 var configFile = "/Users/zhangxuan/Data/work/xuan/community/conf/conf.yaml"
@@ -20,5 +17,5 @@ func init() {
 }
 
 func GetRedisCommunityClient() *redis.Redis {
-	return redis.New(c.RedisConf.Community)
+	return redis.MustNewRedis(c.RedisConf)
 }
