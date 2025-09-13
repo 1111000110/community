@@ -22,11 +22,10 @@ type Hub struct {
 }
 
 type Node struct {
-	mu         sync.RWMutex       // 节点级别锁
-	Clients    []map[int64]Client // 按连接类型分组的客户端映射
-	Register   chan Client        // 注册通道
-	Unregister chan Client        // 注销通道
-	Notify     chan *Notify       // 消息通道
+	Clients    []sync.Map   // 按连接类型分组的客户端映射
+	Register   chan Client  // 注册通道
+	Unregister chan Client  // 注销通道
+	Notify     chan *Notify // 消息通道
 }
 
 // NewHub 创建一个新的 Hub 实例
@@ -34,9 +33,9 @@ func NewHub() *Hub {
 	nodeSlice := make([]*Node, HashCount)
 	for i := 0; i < HashCount; i++ {
 		// 初始化每种连接类型的客户端映射
-		clients := make([]map[int64]Client, ConnTypeCount)
+		clients := make([]sync.Map, ConnTypeCount)
 		for j := 0; j < ConnTypeCount; j++ {
-			clients[j] = make(map[int64]Client)
+			clients[j] = sync.Map{}
 		}
 
 		nodeSlice[i] = &Node{
@@ -98,12 +97,9 @@ func (h *Hub) Start() {
 
 // handleRegister 处理客户端注册
 func (h *Hub) handleRegister(node *Node, client Client, nodeIndex int) {
-	node.mu.Lock()
-	defer node.mu.Unlock()
-
 	connType := client.GetType()
 	if int(connType) < len(node.Clients) {
-		node.Clients[connType][client.GetClientId()] = client
+		node.Clients[connType].Store(client.GetClientId(), client)
 		logx.Debugf("Client %d registered in node %d, type %d",
 			client.GetClientId(), nodeIndex, connType)
 		if err := client.Start(); err != nil {
@@ -117,22 +113,16 @@ func (h *Hub) handleRegister(node *Node, client Client, nodeIndex int) {
 
 // handleUnregister 处理客户端注销
 func (h *Hub) handleUnregister(node *Node, client Client, nodeIndex int) {
-	node.mu.Lock()
-	defer node.mu.Unlock()
-
 	connType := client.GetType()
 	if int(connType) < len(node.Clients) {
-		if _, exists := node.Clients[connType][client.GetClientId()]; exists {
-			delete(node.Clients[connType], client.GetClientId())
-			logx.Debugf("Client %d unregistered from node %d, type %d",
-				client.GetClientId(), nodeIndex, connType)
-		}
-		client.Close()
+		node.Clients[connType].Delete(client.GetClientId())
+		logx.Debugf("Client %d unregistered from node %d, type %d",
+			client.GetClientId(), nodeIndex, connType)
 	} else {
 		logx.Errorf("Invalid connection type %d for client %d during unregister",
 			connType, client.GetClientId())
-		client.Close()
 	}
+	client.Close()
 }
 
 // handleMessage 处理消息发送
@@ -140,11 +130,9 @@ func (h *Hub) handleMessage(node *Node, notify *Notify, nodeIndex int) {
 	if notify == nil {
 		return
 	}
-	node.mu.RLock()
-	defer node.mu.RUnlock()
 	// 在所有连接类型中查找目标客户端
 	for connType := 0; connType < len(node.Clients); connType++ {
-		if client, exists := node.Clients[connType][notify.ConnId]; exists {
+		if client, exists := node.Clients[connType].Load(notify.ConnId); exists {
 			// 异步发送避免阻塞消息处理循环
 			go func(c Client, msg string, nodeIdx int) {
 				select {
@@ -155,7 +143,7 @@ func (h *Hub) handleMessage(node *Node, notify *Notify, nodeIndex int) {
 					logx.Errorf("Send timeout for client %d in node %d, message dropped",
 						c.GetClientId(), nodeIdx)
 				}
-			}(client, notify.Val, nodeIndex)
+			}(client.(Client), notify.Val, nodeIndex)
 			return // 找到客户端后立即返回
 		}
 	}
@@ -188,16 +176,13 @@ func (h *Hub) Stop() {
 		go func(node *Node, nodeIndex int) {
 			defer wg.Done()
 
-			node.mu.Lock()
-			defer node.mu.Unlock()
-
 			clientCount := 0
 			for connType := 0; connType < len(node.Clients); connType++ {
-				for clientId, client := range node.Clients[connType] {
-					client.Close()
-					delete(node.Clients[connType], clientId)
-					clientCount++
-				}
+				node.Clients[connType].Range(func(k, v interface{}) bool {
+					v.(Client).Close()
+					node.Clients[connType].Delete(k)
+					return true
+				})
 			}
 			logx.Infof("Node %d closed %d clients", nodeIndex, clientCount)
 		}(h.Node[i], i)
@@ -293,11 +278,12 @@ func (h *Hub) Consume(_ context.Context, key, val string) error {
 func (h *Hub) GetClientCount() int {
 	total := 0
 	for i := 0; i < int(h.NodeCount); i++ {
-		h.Node[i].mu.RLock()
 		for connType := 0; connType < len(h.Node[i].Clients); connType++ {
-			total += len(h.Node[i].Clients[connType])
+			h.Node[i].Clients[connType].Range(func(key, value interface{}) bool {
+				total++
+				return true
+			})
 		}
-		h.Node[i].mu.RUnlock()
 	}
 	return total
 }
@@ -306,12 +292,13 @@ func (h *Hub) GetClientCount() int {
 func (h *Hub) GetNodeStats() map[int]int {
 	stats := make(map[int]int)
 	for i := 0; i < int(h.NodeCount); i++ {
-		h.Node[i].mu.RLock()
 		nodeTotal := 0
 		for connType := 0; connType < len(h.Node[i].Clients); connType++ {
-			nodeTotal += len(h.Node[i].Clients[connType])
+			h.Node[i].Clients[connType].Range(func(key, value interface{}) bool {
+				nodeTotal++
+				return true
+			})
 		}
-		h.Node[i].mu.RUnlock()
 		stats[i] = nodeTotal
 	}
 	return stats
@@ -328,9 +315,8 @@ func (h *Hub) Broadcast(conn *NotifyList) {
 		return
 	}
 	for i := 0; i < int(h.NodeCount); i++ {
-		h.Node[i].mu.RLock()
 		for connType := 0; connType < len(h.Node[i].Clients); connType++ {
-			for _, client := range h.Node[i].Clients[connType] {
+			h.Node[i].Clients[connType].Range(func(key, value interface{}) bool {
 				go func(c Client, conn *NotifyList, nodeIdx int) {
 					select {
 					case c.GetSendBuffer() <- conn.Val:
@@ -338,9 +324,9 @@ func (h *Hub) Broadcast(conn *NotifyList) {
 						logx.Errorf("Broadcast timeout for client %d in node %d",
 							c.GetClientId(), nodeIdx)
 					}
-				}(client, conn, i)
-			}
+				}(value.(Client), conn, i)
+				return true
+			})
 		}
-		h.Node[i].mu.RUnlock()
 	}
 }
