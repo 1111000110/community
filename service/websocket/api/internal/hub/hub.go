@@ -2,7 +2,6 @@ package hub
 
 import (
 	"context"
-	"encoding/json"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -27,7 +26,7 @@ type Node struct {
 	Clients    []map[int64]Client // 按连接类型分组的客户端映射
 	Register   chan Client        // 注册通道
 	Unregister chan Client        // 注销通道
-	Message    chan *Notification // 消息通道
+	Notify     chan *Notify       // 消息通道
 }
 
 // NewHub 创建一个新的 Hub 实例
@@ -44,7 +43,7 @@ func NewHub() *Hub {
 			Clients:    clients,
 			Register:   make(chan Client, BufferSize),
 			Unregister: make(chan Client, BufferSize),
-			Message:    make(chan *Notification, BufferSize*10),
+			Notify:     make(chan *Notify, BufferSize*10),
 		}
 	}
 
@@ -85,12 +84,12 @@ func (h *Hub) Start() {
 					}
 					h.handleUnregister(node, client, nodeIndex)
 
-				case message, ok := <-node.Message:
+				case notify, ok := <-node.Notify:
 					if !ok {
 						logx.Infof("Node %d message channel closed", nodeIndex)
 						return
 					}
-					h.handleMessage(node, message, nodeIndex)
+					h.handleMessage(node, notify, nodeIndex)
 				}
 			}
 		}(h.Node[i], i)
@@ -137,19 +136,17 @@ func (h *Hub) handleUnregister(node *Node, client Client, nodeIndex int) {
 }
 
 // handleMessage 处理消息发送
-func (h *Hub) handleMessage(node *Node, message *Notification, nodeIndex int) {
-	if message == nil {
+func (h *Hub) handleMessage(node *Node, notify *Notify, nodeIndex int) {
+	if notify == nil {
 		return
 	}
-
 	node.mu.RLock()
 	defer node.mu.RUnlock()
-
 	// 在所有连接类型中查找目标客户端
 	for connType := 0; connType < len(node.Clients); connType++ {
-		if client, exists := node.Clients[connType][message.ConnId]; exists {
+		if client, exists := node.Clients[connType][notify.ConnId]; exists {
 			// 异步发送避免阻塞消息处理循环
-			go func(c Client, msg Notification, nodeIdx int) {
+			go func(c Client, msg string, nodeIdx int) {
 				select {
 				case c.GetSendBuffer() <- msg:
 					logx.Debugf("Message sent to client %d in node %d",
@@ -158,12 +155,12 @@ func (h *Hub) handleMessage(node *Node, message *Notification, nodeIndex int) {
 					logx.Errorf("Send timeout for client %d in node %d, message dropped",
 						c.GetClientId(), nodeIdx)
 				}
-			}(client, *message, nodeIndex)
+			}(client, notify.Val, nodeIndex)
 			return // 找到客户端后立即返回
 		}
 	}
 
-	logx.Debugf("Client %d not found in node %d for message", message.ConnId, nodeIndex)
+	logx.Debugf("Client %d not found in node %d for message", notify.ConnId, nodeIndex)
 }
 
 // Stop 停止 Hub 并清理资源
@@ -178,7 +175,7 @@ func (h *Hub) Stop() {
 	for i := 0; i < int(h.NodeCount); i++ {
 		close(h.Node[i].Register)
 		close(h.Node[i].Unregister)
-		close(h.Node[i].Message)
+		close(h.Node[i].Notify)
 	}
 
 	// 等待一段时间让节点 goroutine 处理完剩余消息
@@ -259,37 +256,36 @@ func (h *Hub) RemoveClient(client Client) {
 }
 
 // AddMessage 添加消息到对应的分片节点
-func (h *Hub) AddMessage(message *Notification) {
-	if h.stopped.Load() || message == nil {
+func (h *Hub) AddMessage(notifyList *NotifyList) {
+	if h.stopped.Load() || notifyList == nil {
 		return
 	}
-
-	nodeIdx := h.HashFunction(message.ConnId)
-	if nodeIdx >= 0 && nodeIdx < h.NodeCount {
-		select {
-		case h.Node[nodeIdx].Message <- message:
-			logx.Debugf("Message queued for client %d in node %d",
-				message.ConnId, nodeIdx)
-		default:
-			logx.Errorf("Message channel full for node %d, message for client %d dropped",
-				nodeIdx, message.ConnId)
+	connList := notifyList.GetKey()
+	if len(connList) == 0 {
+		h.Broadcast(notifyList)
+		return
+	}
+	for _, conn := range connList {
+		nodeIdx := h.HashFunction(conn)
+		notify := NewNotify(conn, notifyList.Val)
+		if nodeIdx >= 0 && nodeIdx < h.NodeCount {
+			select {
+			case h.Node[nodeIdx].Notify <- notify:
+				logx.Debugf("Message queued for client %d in node %d",
+					conn, nodeIdx)
+			default:
+				logx.Errorf("Message channel full for node %d, message for client %d dropped",
+					nodeIdx, conn)
+			}
+		} else {
+			logx.Errorf("Invalid node index %d for client %d", nodeIdx, conn)
 		}
-	} else {
-		logx.Errorf("Invalid node index %d for client %d", nodeIdx, message.ConnId)
 	}
 }
 
 // Consume 消费 Kafka 消息
 func (h *Hub) Consume(_ context.Context, key, val string) error {
-	logx.Infof("Consuming message - key: %s", key)
-
-	var message Notification
-	if err := json.Unmarshal([]byte(val), &message); err != nil {
-		logx.Errorf("Failed to unmarshal message: %v", err)
-		return err
-	}
-	logx.Infof(message.Type, message.ConnId, message.Data)
-	h.AddMessage(&message)
+	h.AddMessage(NewNotifyList(key, val))
 	return nil
 }
 
@@ -327,23 +323,22 @@ func (h *Hub) IsStopped() bool {
 }
 
 // Broadcast 广播消息给所有客户端
-func (h *Hub) Broadcast(message *Notification) {
-	if h.stopped.Load() || message == nil {
+func (h *Hub) Broadcast(conn *NotifyList) {
+	if h.stopped.Load() || conn == nil {
 		return
 	}
-
 	for i := 0; i < int(h.NodeCount); i++ {
 		h.Node[i].mu.RLock()
 		for connType := 0; connType < len(h.Node[i].Clients); connType++ {
 			for _, client := range h.Node[i].Clients[connType] {
-				go func(c Client, msg Notification, nodeIdx int) {
+				go func(c Client, conn *NotifyList, nodeIdx int) {
 					select {
-					case c.GetSendBuffer() <- msg:
+					case c.GetSendBuffer() <- conn.Val:
 					case <-time.After(100 * time.Millisecond):
 						logx.Errorf("Broadcast timeout for client %d in node %d",
 							c.GetClientId(), nodeIdx)
 					}
-				}(client, *message, i)
+				}(client, conn, i)
 			}
 		}
 		h.Node[i].mu.RUnlock()

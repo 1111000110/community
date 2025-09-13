@@ -6,6 +6,7 @@ import (
 	"community/service/websocket/api/internal/svc"
 	"flag"
 	"fmt"
+
 	"github.com/zeromicro/go-zero/core/service"
 
 	"github.com/zeromicro/go-zero/core/conf"

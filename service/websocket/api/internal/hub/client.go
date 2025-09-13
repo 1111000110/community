@@ -1,7 +1,8 @@
 package hub
 
 import (
-	"encoding/json"
+	"community/pkg/xstring"
+	"strings"
 	"time"
 )
 
@@ -29,17 +30,47 @@ func GetConnType(clientType string) int64 {
 }
 
 const ConnTypeCount = 2 // 客户端和web
+const SplitByte = ","
 
-type Notification struct { // 发送的消息
-	ConnId int64           `json:"conn_id"`
-	Type   string          `json:"type"` // 消息类型标识（如"message"、"group_status"、"settings"）
-	Data   json.RawMessage `json:"data"` // 具体内容（使用json.RawMessage支持动态解析）
+type NotifyList struct {
+	Key string // 发送的连接列表
+	Val string // 发送的消息
+}
+
+func NewNotifyList(key, val string) *NotifyList {
+	return &NotifyList{
+		Key: key,
+		Val: val,
+	}
+}
+func (n *NotifyList) GetKey() []int64 {
+	if n.Key == "" {
+		return []int64{}
+	}
+	info := strings.Split(n.Key, SplitByte)
+	resp := make([]int64, 0)
+	for _, d := range info {
+		resp = append(resp, xstring.StringToIntOrZero[int64](d))
+	}
+	return resp
+}
+
+type Notify struct {
+	ConnId int64
+	Val    string
+}
+
+func NewNotify(connId int64, val string) *Notify {
+	return &Notify{
+		ConnId: connId,
+		Val:    val,
+	}
 }
 
 type Client interface {
-	GetType() int64                   // 获取客户端类型
-	GetClientId() int64               // 获取连接id
-	GetSendBuffer() chan Notification // 自己的消息队列
-	Close()                           // 关闭
-	Start() error                     // 启动
+	GetType() int64             // 获取客户端类型,注册和注销的时候需要去对应的map处理
+	GetClientId() int64         // 获取连接id
+	GetSendBuffer() chan string // 自己的消息队列
+	Close()                     // 关闭
+	Start() error               // 启动
 }

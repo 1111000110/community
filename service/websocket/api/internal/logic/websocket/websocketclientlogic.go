@@ -20,12 +20,12 @@ type WebSocketClientLogic struct {
 	logx.Logger
 	ctx          context.Context
 	svcCtx       *svc.ServiceContext
-	cancel       context.CancelFunc    // 取消内部上下文（控制读写协程退出）
-	userId       int64                 // 客户端唯一标识
-	connType     int64                 // 连接类型
-	sendBuffer   chan hub.Notification // 消息发送缓冲区
-	bufferClosed atomic.Bool           // 标记sendBuffer是否已关闭（防止重复close panic）
-	conn         *websocket.Conn       // WebSocket连接实例
+	cancel       context.CancelFunc // 取消内部上下文（控制读写协程退出）
+	userId       int64              // 客户端唯一标识
+	connType     int64              // 连接类型
+	sendBuffer   chan string        // 消息发送缓冲区
+	bufferClosed atomic.Bool        // 标记sendBuffer是否已关闭（防止重复close panic）
+	conn         *websocket.Conn    // WebSocket连接实例
 }
 
 func NewWebSocketClientLogic(_ context.Context, svcCtx *svc.ServiceContext, req *types.WebSocketReq, conn *websocket.Conn) (*WebSocketClientLogic, error) {
@@ -59,7 +59,7 @@ func NewWebSocketClientLogic(_ context.Context, svcCtx *svc.ServiceContext, req 
 		cancel:       cancel,
 		conn:         conn,
 		svcCtx:       svcCtx,
-		sendBuffer:   make(chan hub.Notification, svcCtx.Config.WebSocket.BufSize), // 带缓冲通道，避免阻塞
+		sendBuffer:   make(chan string, svcCtx.Config.WebSocket.BufSize), // 带缓冲通道，避免阻塞
 		userId:       userId,
 		connType:     hub.GetConnType(req.ClientType),
 		bufferClosed: atomic.Bool{}, // 初始为false（未关闭）
@@ -80,7 +80,7 @@ func (l *WebSocketClientLogic) GetClientId() int64 {
 	return l.userId
 }
 
-func (l *WebSocketClientLogic) GetSendBuffer() chan hub.Notification {
+func (l *WebSocketClientLogic) GetSendBuffer() chan string {
 	return l.sendBuffer
 }
 
@@ -101,7 +101,6 @@ func (l *WebSocketClientLogic) ResetRedis() error {
 	if err != nil {
 		logx.Errorf("reset redis failed: %v", err)
 	}
-	logx.Infof("reset redis success")
 	return err
 }
 
@@ -122,38 +121,13 @@ func (l *WebSocketClientLogic) ReadPump() {
 					l.svcCtx.MessageHub.RemoveClient(l)
 					return
 				}
-
 				// 非致命错误（如临时网络波动），短暂重试
 				logx.Errorf("temporary read error (userId: %d): %v, retry after 100ms", l.userId, err)
 				time.Sleep(100 * time.Millisecond)
 				continue
 			}
-
-			//// 读取成功：示例为「消息回显」，可替换为业务逻辑（如转发到Hub）
-			//logx.Infof("received message (userId: %d): %s", l.userId, string(message))
-			//if err := l.conn.WriteMessage(websocket.TextMessage, message); err != nil {
-			//	logx.Errorf("failed to echo message (userId: %d): %v", l.userId, err)
-			//	// 写入失败若为致命错误，触发注销
-			//	if isFatalWriteErr(err) {
-			//		l.svcCtx.MessageHub.RemoveClient(l)
-			//		return
-			//	}
-			//}
-			// todo
-			dynamicBytes, err := json.Marshal(message)
-			if err != nil {
-				panic(err)
-			}
-			notification := &hub.Notification{
-				ConnId: xstring.StringToIntOrZero[int64](string(message)),
-				Type:   "message",
-				Data:   dynamicBytes,
-			}
-			info, err := json.Marshal(notification)
-			if err != nil {
-				panic(err)
-			}
-			err = l.svcCtx.Model.KafkaMessageClient.Push(l.ctx, string(info))
+			err = l.svcCtx.Model.KafkaMessageClient.PushWithKey(l.ctx, "", string(message))
+			// err = l.svcCtx.MessageHub.Consume(l.ctx, "", string(message))
 			if err != nil {
 				logx.Errorf(err.Error())
 			}
@@ -194,7 +168,7 @@ func (l *WebSocketClientLogic) WritePump() {
 			}
 
 			// 批量读取sendBuffer中所有消息（减少写入次数，提升性能）
-			msgList := []hub.Notification{msg}
+			msgList := []string{msg}
 			batchReadMessages(l.sendBuffer, &msgList)
 
 			// 序列化消息（JSON格式）
@@ -295,7 +269,7 @@ func sendCloseFrame(conn *websocket.Conn, code int, reason string) {
 }
 
 // batchReadMessages 批量读取sendBuffer中的消息（避免通道关闭时读取零值）
-func batchReadMessages(buf chan hub.Notification, msgList *[]hub.Notification) {
+func batchReadMessages(buf chan string, msgList *[]string) {
 	for {
 		select {
 		case msg, ok := <-buf:
