@@ -4,6 +4,7 @@ import (
 	"community/pkg/snowflakes"
 	"community/service/message/model/scylla/message"
 	"context"
+	"time"
 
 	"community/service/message/rpc/internal/svc"
 	"community/service/message/rpc/pb"
@@ -40,19 +41,12 @@ func (l *CreateMessageLogic) CreateMessage(in *__.CreateMessageReq) (*__.CreateM
 			return nil, err
 		}
 	}
-	if err := l.svcCtx.ScyllaClient.CreateMessage(l.ctx, &message.Message{
-		MessageId:   messageId,
-		SessionId:   in.GetMessage().GetSessionId(),
-		SendId:      in.GetMessage().GetSendId(),
-		ReplyId:     in.GetMessage().GetReplyId(),
-		CreateTime:  in.GetMessage().GetCreateTime(),
-		UpdateTime:  in.GetMessage().GetUpdateTime(),
-		Status:      in.GetMessage().GetStatus(),
-		Text:        in.GetMessage().GetContent().GetText(),
-		MessageType: in.GetMessage().GetContent().GetMessageType(),
-		Addition:    in.GetMessage().GetContent().GetAddition(),
-	}); err != nil {
+	in.Message.MessageId = messageId
+	in.Message.CreateTime = time.Now().Unix()
+	if err := l.svcCtx.ScyllaClient.CreateMessage(l.ctx, message.RpcModelToModel(in.GetMessage())); err != nil {
 		return nil, err
 	}
-	return &__.CreateMessageResp{}, nil
+	return &__.CreateMessageResp{
+		Message: in.GetMessage(),
+	}, nil
 }

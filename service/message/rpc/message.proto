@@ -52,7 +52,7 @@ message CreateMessageReq{
 }
 
 message CreateMessageResp{
-
+  MessageDetail message=1;
 }
 
 message UpdateMessageByIdReq{

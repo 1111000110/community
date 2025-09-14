@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package websocketPush;
+
+option go_package = "./";
+
+message WebSocketPushData{
+  string notify_type=1;// 通知的类型
+  string notify_val=2;// 通知的数据
+}
+
+message WebSocketPushReq{
+  repeated int64 conn_id =1;// 通知的连接id
+  WebSocketPushData push_data=2;
+}
+message WebSocketPushResp{
+}
+service WebsocketPush{
+  rpc WebSocketPush (WebSocketPushReq) returns (WebSocketPushResp);
+}

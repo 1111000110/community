@@ -1,8 +1,6 @@
 package hub
 
 import (
-	"community/pkg/xstring"
-	"strings"
 	"time"
 )
 
@@ -30,7 +28,6 @@ func GetConnType(clientType string) int64 {
 }
 
 const ConnTypeCount = 2 // 客户端和web
-const SplitByte = ","
 
 type NotifyList struct {
 	Key string // 发送的连接列表
@@ -42,17 +39,6 @@ func NewNotifyList(key, val string) *NotifyList {
 		Key: key,
 		Val: val,
 	}
-}
-func (n *NotifyList) GetKey() []int64 {
-	if n.Key == "" {
-		return []int64{}
-	}
-	info := strings.Split(n.Key, SplitByte)
-	resp := make([]int64, 0)
-	for _, d := range info {
-		resp = append(resp, xstring.StringToIntOrZero[int64](d))
-	}
-	return resp
 }
 
 type Notify struct {

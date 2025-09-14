@@ -21,6 +21,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Config:        c,
 		MessageHub:    messageHub,
 		Model:         DefaultModelClient(),
-		KafkaConsumer: xkafka.DefaultConsumer("message", "message", messageHub),
+		KafkaConsumer: xkafka.DefaultConsumer("message", "messageNode1", messageHub),
 	}
 }

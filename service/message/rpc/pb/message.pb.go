@@ -427,6 +427,7 @@ func (x *CreateMessageReq) GetMessage() *MessageDetail {
 
 type CreateMessageResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Message       *MessageDetail         `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -459,6 +460,13 @@ func (x *CreateMessageResp) ProtoReflect() protoreflect.Message {
 // Deprecated: Use CreateMessageResp.ProtoReflect.Descriptor instead.
 func (*CreateMessageResp) Descriptor() ([]byte, []int) {
 	return file_message_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *CreateMessageResp) GetMessage() *MessageDetail {
+	if x != nil {
+		return x.Message
+	}
+	return nil
 }
 
 type UpdateMessageByIdReq struct {
@@ -674,8 +682,9 @@ const file_message_proto_rawDesc = "" +
 	"\x12GetMessageListResp\x120\n" +
 	"\amessage\x18\x01 \x03(\v2\x16.message.MessageDetailR\amessage\"D\n" +
 	"\x10CreateMessageReq\x120\n" +
-	"\amessage\x18\x01 \x01(\v2\x16.message.MessageDetailR\amessage\"\x13\n" +
-	"\x11CreateMessageResp\"H\n" +
+	"\amessage\x18\x01 \x01(\v2\x16.message.MessageDetailR\amessage\"E\n" +
+	"\x11CreateMessageResp\x120\n" +
+	"\amessage\x18\x01 \x01(\v2\x16.message.MessageDetailR\amessage\"H\n" +
 	"\x14UpdateMessageByIdReq\x120\n" +
 	"\amessage\x18\x01 \x01(\v2\x16.message.MessageDetailR\amessage\"\x17\n" +
 	"\x15UpdateMessageByIdResp\"i\n" +
@@ -725,22 +734,23 @@ var file_message_proto_depIdxs = []int32{
 	1,  // 1: message.GetMessageByIdsResp.message:type_name -> message.MessageDetail
 	1,  // 2: message.GetMessageListResp.message:type_name -> message.MessageDetail
 	1,  // 3: message.CreateMessageReq.message:type_name -> message.MessageDetail
-	1,  // 4: message.UpdateMessageByIdReq.message:type_name -> message.MessageDetail
-	2,  // 5: message.Message.GetMessageByIds:input_type -> message.GetMessageByIdsReq
-	4,  // 6: message.Message.GetMessageList:input_type -> message.GetMessageListReq
-	6,  // 7: message.Message.CreateMessage:input_type -> message.CreateMessageReq
-	8,  // 8: message.Message.UpdateMessageById:input_type -> message.UpdateMessageByIdReq
-	10, // 9: message.Message.DeleteMessage:input_type -> message.DeleteMessageReq
-	3,  // 10: message.Message.GetMessageByIds:output_type -> message.GetMessageByIdsResp
-	5,  // 11: message.Message.GetMessageList:output_type -> message.GetMessageListResp
-	7,  // 12: message.Message.CreateMessage:output_type -> message.CreateMessageResp
-	9,  // 13: message.Message.UpdateMessageById:output_type -> message.UpdateMessageByIdResp
-	11, // 14: message.Message.DeleteMessage:output_type -> message.DeleteMessageResp
-	10, // [10:15] is the sub-list for method output_type
-	5,  // [5:10] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	1,  // 4: message.CreateMessageResp.message:type_name -> message.MessageDetail
+	1,  // 5: message.UpdateMessageByIdReq.message:type_name -> message.MessageDetail
+	2,  // 6: message.Message.GetMessageByIds:input_type -> message.GetMessageByIdsReq
+	4,  // 7: message.Message.GetMessageList:input_type -> message.GetMessageListReq
+	6,  // 8: message.Message.CreateMessage:input_type -> message.CreateMessageReq
+	8,  // 9: message.Message.UpdateMessageById:input_type -> message.UpdateMessageByIdReq
+	10, // 10: message.Message.DeleteMessage:input_type -> message.DeleteMessageReq
+	3,  // 11: message.Message.GetMessageByIds:output_type -> message.GetMessageByIdsResp
+	5,  // 12: message.Message.GetMessageList:output_type -> message.GetMessageListResp
+	7,  // 13: message.Message.CreateMessage:output_type -> message.CreateMessageResp
+	9,  // 14: message.Message.UpdateMessageById:output_type -> message.UpdateMessageByIdResp
+	11, // 15: message.Message.DeleteMessage:output_type -> message.DeleteMessageResp
+	11, // [11:16] is the sub-list for method output_type
+	6,  // [6:11] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_message_proto_init() }

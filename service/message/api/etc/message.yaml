@@ -1,0 +1,13 @@
+Name: message
+Host: 0.0.0.0
+Port: 8888
+MessageConf:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: message.rpc
+WebSocketPushConf:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: websocketpush.rpc

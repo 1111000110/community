@@ -1,6 +1,7 @@
 package hub
 
 import (
+	"community/service/websocket/client"
 	"context"
 	"sync"
 	"sync/atomic"
@@ -245,7 +246,7 @@ func (h *Hub) AddMessage(notifyList *NotifyList) {
 	if h.stopped.Load() || notifyList == nil {
 		return
 	}
-	connList := notifyList.GetKey()
+	connList := client.GetIdsByKey(notifyList.Key)
 	if len(connList) == 0 {
 		h.Broadcast(notifyList)
 		return

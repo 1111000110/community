@@ -3,9 +3,9 @@ package websocket
 import (
 	"community/pkg/snowflakes"
 	"community/pkg/xstring"
+	"community/service/websocket/client"
 	"context"
 	"encoding/json"
-	"fmt"
 	"sync/atomic"
 	"time"
 
@@ -88,13 +88,9 @@ func (l *WebSocketClientLogic) GetType() int64 {
 	return l.connType
 }
 
-func (l *WebSocketClientLogic) getRedisKeyName() string {
-	return fmt.Sprintf("websocket_client:{%s}", xstring.IntToString(l.userId))
-}
-
 func (l *WebSocketClientLogic) ResetRedis() error {
 	err := l.svcCtx.Model.RedisClient.Setex(
-		l.getRedisKeyName(),
+		client.GetRedisKeyName(xstring.IntToString(l.userId)),
 		"node1", // todo 修改机器
 		int(hub.Timeout.Seconds()),
 	)
@@ -127,7 +123,6 @@ func (l *WebSocketClientLogic) ReadPump() {
 				continue
 			}
 			err = l.svcCtx.Model.KafkaMessageClient.PushWithKey(l.ctx, "", string(message))
-			// err = l.svcCtx.MessageHub.Consume(l.ctx, "", string(message))
 			if err != nil {
 				logx.Errorf(err.Error())
 			}
