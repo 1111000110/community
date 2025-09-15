@@ -4,7 +4,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// 哈希密码
+// HashPassword 哈希密码
 func HashPassword(password string) (string, error) {
 	if password == "" {
 		return "", nil
@@ -17,7 +17,7 @@ func HashPassword(password string) (string, error) {
 	return string(hash), nil
 }
 
-// 比较密码和哈希值
+// ComparePassword 比较密码和哈希值
 func ComparePassword(hashedPassword, password string) bool {
 	// 比较密码和哈希值
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))

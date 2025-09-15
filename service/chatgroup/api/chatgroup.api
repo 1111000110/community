@@ -19,9 +19,8 @@ type (
 )
 
 type (
-    ChatGroupCreateReq{
-        ChatGroupId int64 `json:"chat_group_id"`
-    }
+    ChatGroupCreateReq{}
+    ChatGroupCreateResp{}
 )
 @server (
     group:      chatGroup // 统一管理用户相关 API
@@ -30,5 +29,7 @@ type (
     jwt:        Auth // JWT 认证
 )
 service chatGroup {
+    @handler ChatGroupCreate
+    post /chat_group/create (ChatGroupCreateReq) returns (ChatGroupCreateResp);
 }
 

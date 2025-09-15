@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-// 定义自定义声明
+// CustomClaims 定义自定义声明
 type CustomClaims struct {
 	UserID int64 `json:"user_id"`
 	jwt.RegisteredClaims
@@ -18,7 +18,7 @@ type CustomClaims struct {
 var DefaultDuration = time.Hour * 24
 var DefaultSecretKey = "ZhangXuan666"
 
-// 通用Token生成函数
+// CreateTokenByAll 通用Token生成函数
 func CreateTokenByAll(userID int64, duration time.Duration, SecretKey string) (string, error) {
 	claims := CustomClaims{
 		UserID: userID,

@@ -7,10 +7,10 @@ import (
 )
 
 // 密钥和IV长度必须符合AES的要求（16、24、32字节）
-var key = []byte("zhangxuan     liuxueqian") // 16字节密钥
+var key = []byte("zhangxuan5201314wangting") // 16字节密钥
 var iv = []byte("1111100000011111")          // 16字节IV
 
-// 加密字符串
+// Encrypt 加密字符串
 func Encrypt(data string) (string, error) {
 	if data == "" {
 		return "", nil

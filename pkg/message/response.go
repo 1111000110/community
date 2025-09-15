@@ -12,7 +12,7 @@ type Body struct {
 	Result  interface{} `json:"data"`
 }
 
-// 统一返回入口，
+// ResponseHandler 统一返回入口，
 func ResponseHandler(w http.ResponseWriter, resp interface{}, err error) {
 	if err != nil {
 		httpx.OkJson(w, ErrHandler(err))
