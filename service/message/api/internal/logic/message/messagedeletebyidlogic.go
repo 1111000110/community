@@ -1,6 +1,7 @@
 package message
 
 import (
+	"community/service/message/rpc/message"
 	"context"
 
 	"community/service/message/api/internal/svc"
@@ -24,7 +25,10 @@ func NewMessageDeleteByIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 }
 
 func (l *MessageDeleteByIdLogic) MessageDeleteById(req *types.MessageDeleteByIdReq) (resp *types.MessageDeleteByIdResp, err error) {
-	// todo: add your logic here and delete this line
-
+	_, err = l.svcCtx.RpcClient.Message.DeleteMessage(l.ctx, &message.DeleteMessageReq{
+		SessionId: req.SessionId,
+		SendId:    req.SendId,
+		MessageId: req.MessageId,
+	})
 	return
 }

@@ -22,7 +22,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: websocket.WebSocketClientHandler(serverCtx),
 			},
 		},
-		// rest.WithJwt(serverCtx.Config.Auth.AccessSecret),// 临时测试修改 todo
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithTimeout(3000*time.Millisecond),
 		rest.WithMaxBytes(1048576),
 	)

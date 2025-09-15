@@ -24,5 +24,5 @@ func NewPostDeleteLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PostDe
 }
 
 func (l *PostDeleteLogic) PostDelete(in *__.PostDeleteReq) (*__.PostDeleteResp, error) {
-	return &__.PostDeleteResp{}, l.svcCtx.Model.PostMongoClient.DeleteOneByPostId(l.ctx, in.GetPostId())
+	return &__.PostDeleteResp{}, l.svcCtx.ModelClient.MongoPost.DeleteOneByPostId(l.ctx, in.GetPostId())
 }

@@ -1,6 +1,7 @@
 package message
 
 import (
+	"community/service/message/rpc/message"
 	"context"
 
 	"community/service/message/api/internal/svc"
@@ -24,7 +25,30 @@ func NewMessageListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Messa
 }
 
 func (l *MessageListLogic) MessageList(req *types.MessageListReq) (resp *types.MessageListResp, err error) {
-	// todo: add your logic here and delete this line
-
+	resp = &types.MessageListResp{}
+	info, err := l.svcCtx.RpcClient.Message.GetMessageList(l.ctx, &message.GetMessageListReq{
+		SessionId: req.SessionId,
+		Req:       req.Req,
+		Limit:     req.Limit,
+	})
+	if err != nil {
+		return resp, err
+	}
+	for _, d := range info.GetMessage() {
+		resp.MessageDetails = append(resp.MessageDetails, types.MessageDetail{
+			MessageId:  d.MessageId,
+			SessionId:  d.SessionId,
+			SendId:     d.SendId,
+			ReplyId:    d.ReplyId,
+			CreateTime: d.CreateTime,
+			UpdateTime: d.UpdateTime,
+			Status:     d.Status,
+			Content: types.MessageContent{
+				Text:        d.Content.Text,
+				MessageType: d.Content.MessageType,
+				Addition:    d.Content.Addition,
+			},
+		})
+	}
 	return
 }

@@ -16,7 +16,7 @@ type (
 		NickName  string `json:"nick_name"` // 用户昵称，用于显示
 		Avatar    string `json:"avatar"` // 用户头像URL地址
 		Gender    string `json:"gender"` // 用户性别：male/female/unknown
-		BirthDate int64  `json:"birthdate"` // 出生日期时间戳（毫秒）
+		BirthDate int64  `json:"birth_date"` // 出生日期时间戳（毫秒）
 	}
 	// UserPrivate 用户私密信息结构体
 	// 包含用户的敏感信息，仅在特定场景下使用，需要严格的权限控制
@@ -49,7 +49,7 @@ type ( // 登录
 	// 支持手机号或用户ID两种方式登录
 	UserLoginReq {
 		Phone    string `json:"phone"` // 手机号登录（推荐方式）
-		UserId   int64  `json:"userId"` // 用户ID登录（备选方式）
+		UserId   int64  `json:"user_id"` // 用户ID登录（备选方式）
 		Password string `json:"password"` // 用户密码，明文传输（建议HTTPS）
 	}
 	// UserLoginResp 用户登录响应结构体
@@ -78,10 +78,9 @@ type ( // 注册
 // 用户认证相关接口组
 // 包含登录、注册等无需JWT认证的公开接口
 @server (
-	group:      user // 登录
-	timeout:    3s // 超时时间
-	maxBytes:   1048576 // 最大结构体
-	middleware: Middleware // 中间件
+	group:    user // 登录
+	timeout:  3s // 超时时间
+	maxBytes: 1048576 // 最大结构体
 )
 service user {
 	// 用户登录接口
@@ -137,11 +136,10 @@ type ( // 查询
 // 用户管理相关接口组
 // 需要JWT认证的用户管理接口，包含增删改查操作
 @server (
-	group:      user // 统一管理用户相关 API
-	timeout:    3s // 超时时间
-	maxBytes:   1048576 // 最大结构体
-	middleware: Middleware // 中间件
-	jwt:        Auth // JWT 认证
+	group:    user // 统一管理用户相关 API
+	timeout:  3s // 超时时间
+	maxBytes: 1048576 // 最大结构体
+	jwt:      Auth // JWT 认证
 )
 service user {
 	// 用户删除接口
@@ -166,7 +164,7 @@ type (
 	UserRelationsUpdateReq {
 		UserId           int64 `json:"user_id"` // 发起操作的用户ID
 		OUserId          int64 `json:"o_user_id"` // 目标用户ID
-		relationshipType int64 `json:"relations"` // 关系类型：1-好友 2-关注 3-拉黑 4-屏蔽 0-删除关系
+		RelationshipType int64 `json:"relationship_type"` // 关系类型：1-好友 2-关注 3-拉黑 4-屏蔽 0-删除关系
 	}
 	// UserRelationsUpdateResp 用户关系更新响应结构体
 	// 返回更新后的关系信息
@@ -192,11 +190,10 @@ type (
 // 用户关系管理接口组
 // 需要JWT认证的用户关系管理接口，处理好友、关注等社交关系
 @server (
-	group:      relations // 统一管理用户相关 API
-	timeout:    3s // 超时时间
-	maxBytes:   1048576 // 最大结构体
-	middleware: Middleware // 中间件
-	jwt:        Auth // JWT 认证
+	group:    relations // 统一管理用户相关 API
+	timeout:  3s // 超时时间
+	maxBytes: 1048576 // 最大结构体
+	jwt:      Auth // JWT 认证
 )
 service user {
 	// 用户关系更新接口

@@ -14,7 +14,7 @@ type (
 		Version    string `from:"version"` // 连接的版本号
 	}
 	WebSocketResp {
-		connectedId string `json:"connected_id"` // 服务器分配的连接ID
+		ConnectedId string `json:"connected_id"` // 服务器分配的连接ID
 	}
 )
 
@@ -22,7 +22,7 @@ type (
 	group:    websocket
 	timeout:  3s
 	maxBytes: 1048576
-	jwt: Auth
+	jwt:      Auth
 )
 service websocket {
 	@handler WebSocketClient

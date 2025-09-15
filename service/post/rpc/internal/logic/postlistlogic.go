@@ -25,7 +25,7 @@ func NewPostListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PostList
 }
 
 func (l *PostListLogic) PostList(in *__.PostListReq) (*__.PostListResp, error) {
-	data, err := l.svcCtx.Model.PostMongoClient.FindAllByPostIds(l.ctx, in.PostIds)
+	data, err := l.svcCtx.ModelClient.MongoPost.FindAllByPostIds(l.ctx, in.PostIds)
 	if err != nil {
 		return nil, err
 	}

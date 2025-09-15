@@ -6,11 +6,11 @@ import (
 )
 
 type ModelClient struct {
-	MysqlClient user.UserModel
+	Mysql user.UserModel
 }
 
 func DefaultModelClient() *ModelClient {
 	return &ModelClient{
-		MysqlClient: user.NewUserModel(xmysql.GetMysqlCommunityClient()),
+		Mysql: user.NewUserModel(xmysql.GetMysqlCommunityClient()),
 	}
 }

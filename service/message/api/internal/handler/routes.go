@@ -15,31 +15,28 @@ import (
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
-		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.Middleware},
-			[]rest.Route{
-				{
-					Method:  http.MethodPost,
-					Path:    "/message/create",
-					Handler: message.MessageCreateHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/message/delete/id",
-					Handler: message.MessageDeleteByIdHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/message/list",
-					Handler: message.MessageListHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/message/update/id",
-					Handler: message.MessageUpdateByIdHandler(serverCtx),
-				},
-			}...,
-		),
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/message/create",
+				Handler: message.MessageCreateHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/message/delete/id",
+				Handler: message.MessageDeleteByIdHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/message/list",
+				Handler: message.MessageListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/message/update/id",
+				Handler: message.MessageUpdateByIdHandler(serverCtx),
+			},
+		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithTimeout(3000*time.Millisecond),
 		rest.WithMaxBytes(1048576),

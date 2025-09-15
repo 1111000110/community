@@ -10,12 +10,12 @@ info (
 
 type (
 	MessageDetail {
-		MessageId  int64          `json:"messageId"`
-		SessionId  string         `json:"sessionIds"`
-		SendId     int64          `json:"sendId"`
-		ReplyId    int64          `json:"replyId"`
-		CreateTime int64          `json:"createTime"`
-		UpdateTime int64          `json:"updateTime"`
+		MessageId  int64          `json:"message_id"`
+		SessionId  string         `json:"session_id"`
+		SendId     int64          `json:"send_id"`
+		ReplyId    int64          `json:"reply_id"`
+		CreateTime int64          `json:"create_time"`
+		UpdateTime int64          `json:"update_time"`
 		Status     int64          `json:"status"`
 		Content    MessageContent `json:"content"`
 	}
@@ -28,9 +28,9 @@ type (
 
 type (
 	MessageCreateReq {
-		SessionId string         `json:"sessionIds"`
-		SendId    int64          `json:"sendId"`
-		ReplyId   int64          `json:"replyId"`
+		SessionId string         `json:"session_id"`
+		SendId    int64          `json:"send_id"`
+		ReplyId   int64          `json:"reply_id"`
 		Status    int64          `json:"status"`
 		Content   MessageContent `json:"content"`
 	}
@@ -39,49 +39,48 @@ type (
 
 type (
 	MessageUpdateByIdReq {
-		MessageDateil MessageDetail `json:"messageDateil"`
+		MessageDetail MessageDetail `json:"message_detail"`
 	}
 	MessageUpdateByIdResp  {}
 )
 
 type (
 	MessageDeleteByIdReq {
-		SessionId string `json:"sessionId"`
-		SendId    int64  `json:"sendId"`
-		MessageId int64  `json:"messageId"`
+		SessionId string `json:"session_id"`
+		SendId    int64  `json:"send_id"`
+		MessageId int64  `json:"message_id"`
 	}
 	MessageDeleteByIdResp  {}
 )
 
 type (
 	MessageListReq {
-		SessionId string `json:"sessionId"`
+		SessionId string `json:"session_id"`
 		Req       int64  `json:"req"`
 		Limit     int64  `json:"limit"`
 	}
 	MessageListResp {
-		MessageDetails []MessageDetail `json:"messageDetails"`
+		MessageDetails []MessageDetail `json:"message_details"`
 	}
 )
 
 @server (
-	group:      message // 统一管理用户相关 API
-	timeout:    3s // 超时时间
-	maxBytes:   1048576 // 最大结构体
-	middleware: Middleware // 中间件
-	jwt:        Auth // JWT 认证
+	group:    message // 统一管理用户相关 API
+	timeout:  3s // 超时时间
+	maxBytes: 1048576 // 最大结构体
+	jwt:      Auth // JWT 认证
 )
-service message {
-	@handler messageCreate
+service Message {
+	@handler MessageCreate
 	post /message/create (MessageCreateReq) returns (MessageCreateResp)
 
-	@handler messageUpdateById
+	@handler MessageUpdateById
 	post /message/update/id (MessageUpdateByIdReq) returns (MessageUpdateByIdResp)
 
-	@handler messageDeleteById
+	@handler MessageDeleteById
 	post /message/delete/id (MessageDeleteByIdReq) returns (MessageDeleteByIdResp)
 
-	@handler messageList
+	@handler MessageList
 	post /message/list (MessageListReq) returns (MessageListResp)
 }
 

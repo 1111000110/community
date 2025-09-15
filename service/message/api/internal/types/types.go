@@ -10,9 +10,9 @@ type MessageContent struct {
 }
 
 type MessageCreateReq struct {
-	SessionId string         `json:"sessionIds"`
-	SendId    int64          `json:"sendId"`
-	ReplyId   int64          `json:"replyId"`
+	SessionId string         `json:"session_id"`
+	SendId    int64          `json:"send_id"`
+	ReplyId   int64          `json:"reply_id"`
 	Status    int64          `json:"status"`
 	Content   MessageContent `json:"content"`
 }
@@ -21,37 +21,37 @@ type MessageCreateResp struct {
 }
 
 type MessageDeleteByIdReq struct {
-	SessionId string `json:"sessionId"`
-	SendId    int64  `json:"sendId"`
-	MessageId int64  `json:"messageId"`
+	SessionId string `json:"session_id"`
+	SendId    int64  `json:"send_id"`
+	MessageId int64  `json:"message_id"`
 }
 
 type MessageDeleteByIdResp struct {
 }
 
 type MessageDetail struct {
-	MessageId  int64          `json:"messageId"`
-	SessionId  string         `json:"sessionIds"`
-	SendId     int64          `json:"sendId"`
-	ReplyId    int64          `json:"replyId"`
-	CreateTime int64          `json:"createTime"`
-	UpdateTime int64          `json:"updateTime"`
+	MessageId  int64          `json:"message_id"`
+	SessionId  string         `json:"session_id"`
+	SendId     int64          `json:"send_id"`
+	ReplyId    int64          `json:"reply_id"`
+	CreateTime int64          `json:"create_time"`
+	UpdateTime int64          `json:"update_time"`
 	Status     int64          `json:"status"`
 	Content    MessageContent `json:"content"`
 }
 
 type MessageListReq struct {
-	SessionId string `json:"sessionId"`
+	SessionId string `json:"session_id"`
 	Req       int64  `json:"req"`
 	Limit     int64  `json:"limit"`
 }
 
 type MessageListResp struct {
-	MessageDetails []MessageDetail `json:"messageDetails"`
+	MessageDetails []MessageDetail `json:"message_details"`
 }
 
 type MessageUpdateByIdReq struct {
-	MessageDateil MessageDetail `json:"messageDateil"`
+	MessageDetail MessageDetail `json:"message_detail"`
 }
 
 type MessageUpdateByIdResp struct {

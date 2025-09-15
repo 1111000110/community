@@ -48,7 +48,7 @@ func (l *UserRegisterLogic) UserRegister(in *__.UserRegisterReq) (*__.UserRegist
 	if in.GetRole() == "" {
 		insertData.Role = "user"
 	}
-	resultData, err := l.svcCtx.Model.MysqlClient.Insert(l.ctx, insertData)
+	resultData, err := l.svcCtx.ModelClient.Mysql.Insert(l.ctx, insertData)
 	if err != nil {
 		return nil, err
 	}

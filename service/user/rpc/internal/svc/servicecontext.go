@@ -5,13 +5,13 @@ import (
 )
 
 type ServiceContext struct {
-	Config config.Config
-	Model  *ModelClient
+	Config      config.Config
+	ModelClient *ModelClient
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
-		Config: c,
-		Model:  DefaultModelClient(),
+		Config:      c,
+		ModelClient: DefaultModelClient(),
 	}
 }

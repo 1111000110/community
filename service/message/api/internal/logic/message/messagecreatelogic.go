@@ -1,7 +1,9 @@
 package message
 
 import (
+	messageclient "community/service/message/client"
 	"community/service/message/rpc/message"
+	websocketpushclient "community/service/websocketpush/client"
 	"community/service/websocketpush/rpc/websocketpush"
 	"context"
 
@@ -42,13 +44,14 @@ func (l *MessageCreateLogic) MessageCreate(req *types.MessageCreateReq) (resp *t
 			},
 		},
 	})
+	connIds := messageclient.GetPrivateIdsBySessionIds(req.SessionId, req.SendId)
 	if err != nil {
 		return nil, err
 	}
 	_, err = l.svcCtx.RpcClient.WebSocketPush.WebSocketPush(l.ctx, &websocketpush.WebSocketPushReq{
-		ConnId: []int64{111},
+		ConnId: connIds,
 		PushData: &websocketpush.WebSocketPushData{
-			NotifyType: "message",
+			NotifyType: websocketpushclient.Message,
 			NotifyVal:  info.GetMessage().String(),
 		},
 	})
@@ -56,4 +59,5 @@ func (l *MessageCreateLogic) MessageCreate(req *types.MessageCreateReq) (resp *t
 		return nil, err
 	}
 	return &types.MessageCreateResp{}, nil
+
 }
