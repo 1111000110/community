@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"community/pkg/aiapi/kimi"
 	"community/pkg/feishu"
-	"community/pkg/kimi"
 )
 
 // 用户配置结构
