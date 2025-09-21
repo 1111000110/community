@@ -1,0 +1,17 @@
+I, [2025-09-21T03:49:52.639882 #996]  INFO -- : Refreshing Gem list
+I, [2025-09-21T03:50:04.674572 #996]  INFO -- : listening on addr=127.0.0.1:8888 fd=40
+I, [2025-09-21T03:50:04.675283 #996]  INFO -- : listening on addr=/var/opt/gitlab/gitlab-rails/sockets/gitlab.socket fd=41
+I, [2025-09-21T03:50:04.727716 #996]  INFO -- : master process ready
+I, [2025-09-21T03:50:05.019274 #1066]  INFO -- : worker=0 ready
+I, [2025-09-21T03:50:05.065886 #1072]  INFO -- : worker=2 ready
+I, [2025-09-21T03:50:05.067266 #1069]  INFO -- : worker=1 ready
+I, [2025-09-21T03:50:05.084851 #1093]  INFO -- : worker=9 ready
+I, [2025-09-21T03:50:05.092361 #1084]  INFO -- : worker=6 ready
+I, [2025-09-21T03:50:05.108048 #1087]  INFO -- : worker=7 ready
+I, [2025-09-21T03:50:05.112755 #1078]  INFO -- : worker=4 ready
+I, [2025-09-21T03:50:05.124088 #1090]  INFO -- : worker=8 ready
+I, [2025-09-21T03:50:05.134139 #1099]  INFO -- : worker=11 ready
+I, [2025-09-21T03:50:05.200188 #1075]  INFO -- : worker=3 ready
+I, [2025-09-21T03:50:05.260103 #1096]  INFO -- : worker=10 ready
+I, [2025-09-21T03:50:05.263573 #1102]  INFO -- : worker=12 ready
+I, [2025-09-21T03:50:05.274718 #1081]  INFO -- : worker=5 ready

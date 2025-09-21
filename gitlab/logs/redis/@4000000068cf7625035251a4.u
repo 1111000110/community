@@ -1,0 +1,21 @@
+2025-09-21_03:49:19.86718                 _._                                                  
+2025-09-21_03:49:19.86940            _.-``__ ''-._                                             
+2025-09-21_03:49:19.86945       _.-``    `.  `_.  ''-._           Redis 3.2.11 (00000000/0) 64 bit
+2025-09-21_03:49:19.86948   .-`` .-```.  ```\/    _.,_ ''-._                                   
+2025-09-21_03:49:19.86951  (    '      ,       .-`  | `,    )     Running in standalone mode
+2025-09-21_03:49:19.86954  |`-._`-...-` __...-.``-._|'` _.-'|     Port: 0
+2025-09-21_03:49:19.86957  |    `-._   `._    /     _.-'    |     PID: 733
+2025-09-21_03:49:19.86960   `-._    `-._  `-./  _.-'    _.-'                                   
+2025-09-21_03:49:19.86965  |`-._`-._    `-.__.-'    _.-'_.-'|                                  
+2025-09-21_03:49:19.86968  |    `-._`-._        _.-'_.-'    |           http://redis.io        
+2025-09-21_03:49:19.86972   `-._    `-._`-.__.-'_.-'    _.-'                                   
+2025-09-21_03:49:19.86976  |`-._`-._    `-.__.-'    _.-'_.-'|                                  
+2025-09-21_03:49:19.86980  |    `-._`-._        _.-'_.-'    |                                  
+2025-09-21_03:49:19.86983   `-._    `-._`-.__.-'_.-'    _.-'                                   
+2025-09-21_03:49:19.86986       `-._    `-.__.-'    _.-'                                       
+2025-09-21_03:49:19.86989           `-._        _.-'                                           
+2025-09-21_03:49:19.86993               `-.__.-'                                               
+2025-09-21_03:49:19.86996 
+2025-09-21_03:49:19.87000 733:M 21 Sep 03:49:19.867 # Server started, Redis version 3.2.11
+2025-09-21_03:49:19.87003 733:M 21 Sep 03:49:19.869 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.
+2025-09-21_03:49:19.87006 733:M 21 Sep 03:49:19.869 * The server is now ready to accept connections at /var/opt/gitlab/redis/redis.socket
