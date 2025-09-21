@@ -1,2 +1,0 @@
-2025-09-21_03:50:54.20243 level=info ts=2025-09-21T03:50:54.202295Z caller=cluster.go:586 component=cluster msg="gossip not settled" polls=0 before=0 now=1 elapsed=2.001899s
-2025-09-21_03:51:02.21047 level=info ts=2025-09-21T03:51:02.209198Z caller=cluster.go:578 component=cluster msg="gossip settled; proceeding" elapsed=10.008513s
