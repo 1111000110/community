@@ -2,8 +2,8 @@ package websocket
 
 import (
 	"community/pkg/snowflakes"
+	"community/pkg/xstring"
 	"community/service/websocket/client"
-	"community/xuan/xstring"
 	"context"
 	"encoding/json"
 	"sync/atomic"

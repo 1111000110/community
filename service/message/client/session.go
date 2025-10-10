@@ -1,7 +1,7 @@
 package client
 
 import (
-	"community/xuan/xstring"
+	"community/pkg/xstring"
 	"strings"
 )
 
