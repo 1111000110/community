@@ -6,11 +6,11 @@ import (
 )
 
 type ModelClient struct {
-	Scylla message.MessageModel
+	Scylla scyllamessage.MessageModel
 }
 
 func DefaultModelClient() *ModelClient {
 	return &ModelClient{
-		Scylla: message.NewMessageModel(xscylla.GetScyllaCommunitySession()),
+		Scylla: scyllamessage.NewMessageModel(xscylla.GetScyllaCommunitySession()),
 	}
 }

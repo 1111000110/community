@@ -43,7 +43,7 @@ func (l *CreateMessageLogic) CreateMessage(in *__.CreateMessageReq) (*__.CreateM
 	}
 	in.Message.MessageId = messageId
 	in.Message.CreateTime = time.Now().Unix()
-	if err := l.svcCtx.ModelClient.Scylla.CreateMessage(l.ctx, message.RpcModelToModel(in.GetMessage())); err != nil {
+	if err := l.svcCtx.ModelClient.Scylla.CreateMessage(l.ctx, scyllamessage.RpcModelToModel(in.GetMessage())); err != nil {
 		return nil, err
 	}
 	return &__.CreateMessageResp{

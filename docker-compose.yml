@@ -1,31 +1,4 @@
 services:
-  # nginx 服务 - 社区项目API网关
-  nginx:
-    image: nginx:stable
-    container_name: nginx-local
-    # 容器重启策略：总是重启（即使宿主机重启）
-    restart: always
-    # 端口映射：宿主机 80 端口 → 容器 80 端口（HTTP 默认端口）
-    # 若需 HTTPS，可添加 443:443 映射（需额外配置 SSL 证书）
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      # 1. 挂载 Nginx 核心配置文件（宿主机目录 → 容器目录）
-      - ./docker-data/nginx/conf/nginx.conf:/etc/nginx/nginx.conf
-      # 2. 挂载虚拟主机配置（每个站点的独立配置，推荐此方式）
-      - ./docker-data/nginx/conf.d:/etc/nginx/conf.d
-      # 3. 挂载静态资源（如前端项目、图片等，根据需求配置）
-      - ./docker-data/nginx/html:/usr/share/nginx/html
-      # 4. 挂载日志目录（容器日志输出到宿主机，方便查看）
-      - ./docker-data/nginx/logs:/var/log/nginx
-      # 5. 可选：HTTPS 证书挂载（如需 HTTPS，添加此目录并放入证书）
-      # - ./docker-data/nginx/ssl:/etc/nginx/ssl
-    networks:
-      - db-network
-    # 添加额外主机映射，允许容器访问宿主机服务
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
   # MongoDB 服务
   mongo:
     image: mongo:7.0

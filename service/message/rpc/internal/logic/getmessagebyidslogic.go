@@ -25,11 +25,11 @@ func NewGetMessageByIdsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *G
 }
 
 func (l *GetMessageByIdsLogic) GetMessageByIds(in *__.GetMessageByIdsReq) (*__.GetMessageByIdsResp, error) {
-	data, err := l.svcCtx.ScyllaClient.GetMessageByIds(l.ctx, in.GetSessionId(), in.GetMessageId())
+	data, err := l.svcCtx.ModelClient.Scylla.GetMessageByIds(l.ctx, in.GetSessionId(), in.GetMessageId())
 	if err != nil {
 		return nil, err
 	}
 	return &__.GetMessageByIdsResp{
-		Message: message.ModelsToRpcModels(data),
+		Message: scyllamessage.ModelsToRpcModels(data),
 	}, nil
 }

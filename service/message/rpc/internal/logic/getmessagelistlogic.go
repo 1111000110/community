@@ -25,11 +25,11 @@ func NewGetMessageListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 }
 
 func (l *GetMessageListLogic) GetMessageList(in *__.GetMessageListReq) (*__.GetMessageListResp, error) {
-	data, err := l.svcCtx.ScyllaClient.GetMessageList(l.ctx, in.GetSessionId(), int(in.GetReq()), int(in.GetLimit()))
+	data, err := l.svcCtx.ModelClient.Scylla.GetMessageList(l.ctx, in.GetSessionId(), int(in.GetReq()), int(in.GetLimit()))
 	if err != nil {
 		return nil, err
 	}
 	return &__.GetMessageListResp{
-		Message: message.ModelsToRpcModels(data),
+		Message: scyllamessage.ModelsToRpcModels(data),
 	}, nil
 }

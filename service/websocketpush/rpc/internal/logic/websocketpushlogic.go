@@ -1,10 +1,10 @@
 package logic
 
 import (
-	"community/pkg/xstring"
 	"community/service/websocket/client"
 	"community/service/websocketpush/rpc/internal/svc"
 	"community/service/websocketpush/rpc/pb"
+	"community/xuan/xstring"
 	"context"
 
 	"github.com/zeromicro/go-zero/core/logx"

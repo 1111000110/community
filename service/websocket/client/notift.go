@@ -1,7 +1,7 @@
 package client
 
 import (
-	"community/pkg/xstring"
+	"community/xuan/xstring"
 	"fmt"
 	"strings"
 )

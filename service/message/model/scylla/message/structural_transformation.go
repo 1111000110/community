@@ -1,4 +1,4 @@
-package message
+package scyllamessage
 
 import "community/service/message/rpc/message"
 

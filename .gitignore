@@ -1,10 +1,16 @@
-# 忽略 Docker 数据目录（你的大文件都在这里）
+# 忽略Docker数据目录（存储大文件，无需版本控制）
 docker-data/
+# 忽略cmd/xuan目录（根据项目需求无需跟踪）
 cmd/xuan
-# 额外补充：常见的无需跟踪的文件（可选，避免后续踩坑）
-*.log        # 忽略所有日志文件
-*.gz         # 忽略压缩文件
-*.jar        # 忽略 jar 包
-.DS_Store    # macOS 系统文件
-node_modules/ # 前端依赖（如果有）
-venv/        # Python 虚拟环境（如果有）
+# 忽略所有日志文件（动态生成，无需版本控制）
+*.log
+# 忽略所有压缩文件（通常为二进制包，无需跟踪）
+*.gz
+# 忽略所有jar包（编译产物，无需版本控制）
+*.jar
+# 忽略macOS系统生成的.DS_Store文件（系统自动生成，与项目无关）
+.DS_Store
+# 忽略前端node_modules目录（依赖包，可通过npm安装，无需跟踪）
+node_modules/
+# 忽略Python虚拟环境目录（本地环境配置，无需版本控制）
+venv/
