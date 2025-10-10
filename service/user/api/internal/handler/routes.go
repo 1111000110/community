@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"time"
 
-	relations "community/service/user/api/internal/handler/relations"
 	user "community/service/user/api/internal/handler/user"
 	"community/service/user/api/internal/svc"
 
@@ -15,24 +14,6 @@ import (
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
-	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodPost,
-				Path:    "/userRelations/get",
-				Handler: relations.UserRelationsGetHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/userRelations/update",
-				Handler: relations.UserRelationsUpdateHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithTimeout(3000*time.Millisecond),
-		rest.WithMaxBytes(1048576),
-	)
-
 	server.AddRoutes(
 		[]rest.Route{
 			{
