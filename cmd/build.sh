@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 进入cmd目录，失败则退出
+# 进入xuan目录，失败则退出
 cd "$(dirname "${BASH_SOURCE[0]}")" || exit
 
 # 编译程序
@@ -9,7 +9,7 @@ go build -o xuan main.go || {
     exit 1
 }
 
-# 获取当前目录的绝对路径（即cmd目录）
+# 获取当前目录的绝对路径
 current_dir=$(pwd)
 echo "程序已编译到: $current_dir"
 
