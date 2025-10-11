@@ -27,7 +27,6 @@ func NewMessageDeleteByIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 func (l *MessageDeleteByIdLogic) MessageDeleteById(req *types.MessageDeleteByIdReq) (resp *types.MessageDeleteByIdResp, err error) {
 	_, err = l.svcCtx.RpcClient.Message.DeleteMessage(l.ctx, &message.DeleteMessageReq{
 		SessionId: req.SessionId,
-		SendId:    req.SendId,
 		MessageId: req.MessageId,
 	})
 	return

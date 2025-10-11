@@ -1,6 +1,9 @@
 Name: message
 Host: 0.0.0.0
-Port: 8888
+Port: 8085
+Auth:
+  AccessSecret: "ZhangXuan666"
+  AccessExpire:  86400
 MessageConf:
   Etcd:
     Hosts:

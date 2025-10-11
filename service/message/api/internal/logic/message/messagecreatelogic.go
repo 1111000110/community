@@ -29,19 +29,14 @@ func NewMessageCreateLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Mes
 
 func (l *MessageCreateLogic) MessageCreate(req *types.MessageCreateReq) (resp *types.MessageCreateResp, err error) {
 	info, err := l.svcCtx.RpcClient.Message.CreateMessage(l.ctx, &message.CreateMessageReq{
-		Message: &message.MessageDetail{
-			MessageId:  0,
-			SessionId:  req.SessionId,
-			SendId:     req.SendId,
-			ReplyId:    req.ReplyId,
-			CreateTime: 0,
-			UpdateTime: 0,
-			Status:     req.Status,
-			Content: &message.MessageContent{
-				Text:        req.Content.Text,
-				MessageType: req.Content.MessageType,
-				Addition:    req.Content.Addition,
-			},
+		SessionId: req.SessionId,
+		SendId:    req.SendId,
+		ReplyId:   req.ReplyId,
+		Status:    req.Status,
+		Content: &message.MessageContent{
+			Text:        req.Content.Text,
+			MessageType: req.Content.MessageType,
+			Addition:    req.Content.Addition,
 		},
 	})
 	connIds := messageclient.GetPrivateIdsBySessionIds(req.SessionId, req.SendId)

@@ -48,7 +48,11 @@ message GetMessageListResp{
 }
 
 message CreateMessageReq{
-    MessageDetail message=1;
+  string session_id = 1;         // 会话ID（关联群聊或单聊）
+  int64 send_id = 2;            // 发送者ID
+  int64 reply_id = 3;           // 回复的消息ID（0表示非回复）
+  int64 status = 4;             // 消息状态
+  MessageContent content = 5;   // 消息内容
 }
 
 message CreateMessageResp{
@@ -65,8 +69,7 @@ message UpdateMessageByIdResp{
 
 message DeleteMessageReq{
   string session_id=1;// 删除的会话id
-  int64 send_id=2;// 删除的发送者id
-  int64 message_id=3;
+  int64 message_id=2;// 删除的消息id
 }
 
 message DeleteMessageResp{

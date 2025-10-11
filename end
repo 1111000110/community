@@ -56,12 +56,16 @@ stop_service user-rpc
 stop_service user-api
 stop_service post-rpc
 stop_service post-api
+stop_service message-rpc
+stop_service message-api
 
 # 清理日志和二进制
 clean_service "service/user/api"
 clean_service "service/user/rpc"
 clean_service "service/post/api"
 clean_service "service/post/rpc"
+clean_service "service/message/api"
+clean_service "service/message/rpc"
 
 # 数据清理功能
 if [[ "$CLEAN_DATA" == true ]]; then

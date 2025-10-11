@@ -124,6 +124,8 @@ run_service "service/user/rpc"
 run_service "service/user/api"
 run_service "service/post/rpc"
 run_service "service/post/api"
+run_service "service/message/rpc"
+run_service "service/message/api"
 
 echo "All services started successfully."
 

@@ -1,6 +1,6 @@
 Name: websocket
 Host: 0.0.0.0
-Port: 8888
+Port: 8087
 Auth:
   AccessSecret: "ZhangXuan666"
   AccessExpire:  86400

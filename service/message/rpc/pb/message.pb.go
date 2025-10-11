@@ -383,7 +383,11 @@ func (x *GetMessageListResp) GetMessage() []*MessageDetail {
 
 type CreateMessageReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Message       *MessageDetail         `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"` // 会话ID（关联群聊或单聊）
+	SendId        int64                  `protobuf:"varint,2,opt,name=send_id,json=sendId,proto3" json:"send_id,omitempty"`         // 发送者ID
+	ReplyId       int64                  `protobuf:"varint,3,opt,name=reply_id,json=replyId,proto3" json:"reply_id,omitempty"`      // 回复的消息ID（0表示非回复）
+	Status        int64                  `protobuf:"varint,4,opt,name=status,proto3" json:"status,omitempty"`                       // 消息状态
+	Content       *MessageContent        `protobuf:"bytes,5,opt,name=content,proto3" json:"content,omitempty"`                      // 消息内容
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -418,9 +422,37 @@ func (*CreateMessageReq) Descriptor() ([]byte, []int) {
 	return file_message_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *CreateMessageReq) GetMessage() *MessageDetail {
+func (x *CreateMessageReq) GetSessionId() string {
 	if x != nil {
-		return x.Message
+		return x.SessionId
+	}
+	return ""
+}
+
+func (x *CreateMessageReq) GetSendId() int64 {
+	if x != nil {
+		return x.SendId
+	}
+	return 0
+}
+
+func (x *CreateMessageReq) GetReplyId() int64 {
+	if x != nil {
+		return x.ReplyId
+	}
+	return 0
+}
+
+func (x *CreateMessageReq) GetStatus() int64 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *CreateMessageReq) GetContent() *MessageContent {
+	if x != nil {
+		return x.Content
 	}
 	return nil
 }
@@ -551,9 +583,8 @@ func (*UpdateMessageByIdResp) Descriptor() ([]byte, []int) {
 
 type DeleteMessageReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"` // 删除的会话id
-	SendId        int64                  `protobuf:"varint,2,opt,name=send_id,json=sendId,proto3" json:"send_id,omitempty"`         // 删除的发送者id
-	MessageId     int64                  `protobuf:"varint,3,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"`
+	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`  // 删除的会话id
+	MessageId     int64                  `protobuf:"varint,2,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"` // 删除的消息id
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -593,13 +624,6 @@ func (x *DeleteMessageReq) GetSessionId() string {
 		return x.SessionId
 	}
 	return ""
-}
-
-func (x *DeleteMessageReq) GetSendId() int64 {
-	if x != nil {
-		return x.SendId
-	}
-	return 0
 }
 
 func (x *DeleteMessageReq) GetMessageId() int64 {
@@ -680,20 +704,24 @@ const file_message_proto_rawDesc = "" +
 	"\x03req\x18\x02 \x01(\x03R\x03req\x12\x14\n" +
 	"\x05limit\x18\x03 \x01(\x03R\x05limit\"F\n" +
 	"\x12GetMessageListResp\x120\n" +
-	"\amessage\x18\x01 \x03(\v2\x16.message.MessageDetailR\amessage\"D\n" +
-	"\x10CreateMessageReq\x120\n" +
-	"\amessage\x18\x01 \x01(\v2\x16.message.MessageDetailR\amessage\"E\n" +
+	"\amessage\x18\x01 \x03(\v2\x16.message.MessageDetailR\amessage\"\xb0\x01\n" +
+	"\x10CreateMessageReq\x12\x1d\n" +
+	"\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x17\n" +
+	"\asend_id\x18\x02 \x01(\x03R\x06sendId\x12\x19\n" +
+	"\breply_id\x18\x03 \x01(\x03R\areplyId\x12\x16\n" +
+	"\x06status\x18\x04 \x01(\x03R\x06status\x121\n" +
+	"\acontent\x18\x05 \x01(\v2\x17.message.MessageContentR\acontent\"E\n" +
 	"\x11CreateMessageResp\x120\n" +
 	"\amessage\x18\x01 \x01(\v2\x16.message.MessageDetailR\amessage\"H\n" +
 	"\x14UpdateMessageByIdReq\x120\n" +
 	"\amessage\x18\x01 \x01(\v2\x16.message.MessageDetailR\amessage\"\x17\n" +
-	"\x15UpdateMessageByIdResp\"i\n" +
+	"\x15UpdateMessageByIdResp\"P\n" +
 	"\x10DeleteMessageReq\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x17\n" +
-	"\asend_id\x18\x02 \x01(\x03R\x06sendId\x12\x1d\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x1d\n" +
 	"\n" +
-	"message_id\x18\x03 \x01(\x03R\tmessageId\"\x13\n" +
+	"message_id\x18\x02 \x01(\x03R\tmessageId\"\x13\n" +
 	"\x11DeleteMessageResp2\x86\x03\n" +
 	"\aMessage\x12L\n" +
 	"\x0fGetMessageByIds\x12\x1b.message.GetMessageByIdsReq\x1a\x1c.message.GetMessageByIdsResp\x12I\n" +
@@ -733,7 +761,7 @@ var file_message_proto_depIdxs = []int32{
 	0,  // 0: message.MessageDetail.content:type_name -> message.MessageContent
 	1,  // 1: message.GetMessageByIdsResp.message:type_name -> message.MessageDetail
 	1,  // 2: message.GetMessageListResp.message:type_name -> message.MessageDetail
-	1,  // 3: message.CreateMessageReq.message:type_name -> message.MessageDetail
+	0,  // 3: message.CreateMessageReq.content:type_name -> message.MessageContent
 	1,  // 4: message.CreateMessageResp.message:type_name -> message.MessageDetail
 	1,  // 5: message.UpdateMessageByIdReq.message:type_name -> message.MessageDetail
 	2,  // 6: message.Message.GetMessageByIds:input_type -> message.GetMessageByIdsReq
