@@ -1,5 +1,31 @@
 #!/bin/bash
 
+# 安装 goctl（若未安装）
+if ! command -v goctl >/dev/null 2>&1; then
+    echo "未检测到 goctl，正在安装..."
+    GOPATH_DIR=$(go env GOPATH)
+    if [ -z "$GOPATH_DIR" ]; then
+        GOPATH_DIR="$HOME/go"
+    fi
+    GO_BIN="$GOPATH_DIR/bin"
+
+    # 安装 goctl 到 GOPATH/bin
+    if ! go install github.com/zeromicro/go-zero/tools/goctl@latest; then
+        echo "goctl 安装失败"
+        exit 1
+    fi
+
+    # 确保 GOPATH/bin 在 PATH 中
+    if ! grep -qxF "export PATH=\$PATH:$GO_BIN" "$config_file"; then
+        echo "export PATH=\$PATH:$GO_BIN" >> "$config_file"
+        echo "已将 $GO_BIN 添加到 PATH 配置中 ($config_file)"
+    fi
+
+    echo "goctl 安装完成"
+else
+    echo "检测到 goctl 已安装"
+fi
+
 # 进入xuan目录，失败则退出
 cd "$(dirname "${BASH_SOURCE[0]}")" || exit
 
