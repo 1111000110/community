@@ -1,16 +1,16 @@
 package svc
 
 import (
-	"community/conf/databases/xscylla"
-	"community/service/message/model/scylla/message"
+	"community/conf/databases/xmysql"
+	mysqlmessage "community/service/message/model/mysql/message"
 )
 
 type ModelClient struct {
-	Scylla scyllamessage.MessageModel
+	MysqlMessage mysqlmessage.MessageModel
 }
 
 func DefaultModelClient() *ModelClient {
 	return &ModelClient{
-		Scylla: scyllamessage.NewMessageModel(xscylla.GetScyllaCommunitySession()),
+		MysqlMessage: mysqlmessage.NewMessageModel(xmysql.GetMysqlCommunityClient()),
 	}
 }

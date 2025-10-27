@@ -8,10 +8,10 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "xuan",
-	Short: "Project CLI",
-	Long:  "Xuan CLI - generate code, run and stop services.",
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+	Use:   "xuan",                                             // 跟命令名称
+	Short: "Project CLI",                                      // 简短描述
+	Long:  "Xuan CLI - generate code, run and stop services.", // 长描述
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error { // 在所有子命令执行前执行
 		if !isProjectRoot() {
 			return fmt.Errorf("xuan 命令只能在项目根目录执行")
 		}

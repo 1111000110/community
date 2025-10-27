@@ -1,7 +1,7 @@
 package logic
 
 import (
-	"community/service/message/model/scylla/message"
+	mysqlmessage "community/service/message/model/mysql/message"
 	"context"
 
 	"community/service/message/rpc/internal/svc"
@@ -25,11 +25,11 @@ func NewGetMessageListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 }
 
 func (l *GetMessageListLogic) GetMessageList(in *__.GetMessageListReq) (*__.GetMessageListResp, error) {
-	data, err := l.svcCtx.ModelClient.Scylla.GetMessageList(l.ctx, in.GetSessionId(), int(in.GetReq()), int(in.GetLimit()))
+	data, err := l.svcCtx.ModelClient.MysqlMessage.GetMessageList(l.ctx, in.GetSessionId(), in.GetReq(), in.GetLimit())
 	if err != nil {
 		return nil, err
 	}
 	return &__.GetMessageListResp{
-		Message: scyllamessage.ModelsToRpcModels(data),
+		Message: mysqlmessage.ModelsToRpcModels(data),
 	}, nil
 }

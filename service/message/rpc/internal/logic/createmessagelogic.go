@@ -3,7 +3,7 @@ package logic
 import (
 	"community/pkg/snowflakes"
 	"community/service/message/client"
-	"community/service/message/model/scylla/message"
+	mysqlmessage "community/service/message/model/mysql/message"
 	"context"
 	"time"
 
@@ -39,7 +39,7 @@ func (l *CreateMessageLogic) CreateMessage(in *__.CreateMessageReq) (*__.CreateM
 	if err != nil {
 		return nil, err
 	}
-	messageInfo := &scyllamessage.Message{
+	messageInfo := &mysqlmessage.Message{
 		MessageId:   messageId,
 		SessionId:   in.GetSessionId(),
 		SendId:      in.GetSendId(),
@@ -51,10 +51,10 @@ func (l *CreateMessageLogic) CreateMessage(in *__.CreateMessageReq) (*__.CreateM
 		MessageType: in.GetContent().GetMessageType(),
 		Addition:    in.GetContent().GetAddition(),
 	}
-	if err = l.svcCtx.ModelClient.Scylla.CreateMessage(l.ctx, messageInfo); err != nil {
+	if _, err = l.svcCtx.ModelClient.MysqlMessage.Insert(l.ctx, messageInfo); err != nil {
 		return nil, err
 	}
 	return &__.CreateMessageResp{
-		Message: scyllamessage.ModelToRpcModel(messageInfo),
+		Message: mysqlmessage.ModelToRpcModel(messageInfo),
 	}, nil
 }

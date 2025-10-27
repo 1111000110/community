@@ -1,7 +1,7 @@
 package logic
 
 import (
-	"community/service/message/model/scylla/message"
+	mysqlmessage "community/service/message/model/mysql/message"
 	"context"
 
 	"community/service/message/rpc/internal/svc"
@@ -25,11 +25,11 @@ func NewGetMessageByIdsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *G
 }
 
 func (l *GetMessageByIdsLogic) GetMessageByIds(in *__.GetMessageByIdsReq) (*__.GetMessageByIdsResp, error) {
-	data, err := l.svcCtx.ModelClient.Scylla.GetMessageByIds(l.ctx, in.GetSessionId(), in.GetMessageId())
+	data, err := l.svcCtx.ModelClient.MysqlMessage.FindAllBySessionIdAndMessageIds(l.ctx, in.GetSessionId(), in.GetMessageId())
 	if err != nil {
 		return nil, err
 	}
 	return &__.GetMessageByIdsResp{
-		Message: scyllamessage.ModelsToRpcModels(data),
+		Message: mysqlmessage.ModelsToRpcModels(data),
 	}, nil
 }

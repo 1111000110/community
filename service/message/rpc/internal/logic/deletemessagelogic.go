@@ -24,7 +24,7 @@ func NewDeleteMessageLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Del
 }
 
 func (l *DeleteMessageLogic) DeleteMessage(in *__.DeleteMessageReq) (*__.DeleteMessageResp, error) {
-	if err := l.svcCtx.ModelClient.Scylla.DeleteMessage(l.ctx, in.GetSessionId(), in.GetMessageId()); err != nil {
+	if err := l.svcCtx.ModelClient.MysqlMessage.DeleteBySessionIdAndMessageID(l.ctx, in.GetSessionId(), in.GetMessageId()); err != nil {
 		return nil, err
 	}
 	return &__.DeleteMessageResp{}, nil

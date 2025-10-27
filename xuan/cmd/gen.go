@@ -12,7 +12,10 @@ var genCmd = &cobra.Command{
 	Short: "Generate code (api/rpc)",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Use: xuan gen [api|rpc] <dir> [flags]")
-		cmd.Help()
+		err := cmd.Help()
+		if err != nil {
+			return
+		}
 	},
 }
 
@@ -22,7 +25,9 @@ var genAPICmd = &cobra.Command{
 	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		dir := "."
-		if len(args) == 1 { dir = args[0] }
+		if len(args) == 1 {
+			dir = args[0]
+		}
 		return gen.API(dir)
 	},
 }
@@ -37,7 +42,9 @@ var genRPCCmd = &cobra.Command{
 	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		dir := "."
-		if len(args) == 1 { dir = args[0] }
+		if len(args) == 1 {
+			dir = args[0]
+		}
 		return gen.RPC(dir, multiple)
 	},
 }

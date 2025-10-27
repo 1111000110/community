@@ -28,7 +28,7 @@ func RestartServices(root string, doAPI, doRPC bool) error {
 
 func runAll() error {
 	fmt.Println("重启 docker-compose 服务...")
-	if err := dockerComposeDownUp(); err != nil {
+	if err := dockerComposeDownUp(); err != nil { // 重启docker
 		return err
 	}
 
