@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"community/xuan/commands/run"
+	"community/xuan-cmd/commands/run"
 	"github.com/spf13/cobra"
 )
 

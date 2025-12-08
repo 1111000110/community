@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"community/xuan/commands/gen"
+	"community/xuan-cmd/commands/gen"
 	"github.com/spf13/cobra"
 )
 

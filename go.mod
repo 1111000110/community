@@ -1,14 +1,13 @@
 module community
 
-go 1.24.0
-
-toolchain go1.24.5
+go 1.21
 
 require (
 	github.com/gocql/gocql v1.7.0
 	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/gorilla/websocket v1.5.0
 	github.com/pkg/errors v0.9.1
+	github.com/spf13/cobra v1.10.1
 	github.com/zeromicro/go-queue v1.2.2
 	github.com/zeromicro/go-zero v1.8.4
 	go.mongodb.org/mongo-driver v1.17.4
@@ -67,7 +66,6 @@ require (
 	github.com/redis/go-redis/v9 v9.10.0 // indirect
 	github.com/segmentio/kafka-go v0.4.47 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
-	github.com/spf13/cobra v1.10.1 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect

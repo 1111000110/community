@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package ai;
+
+option go_package = "./";
+service Ai{
+  rpc UpsertAgent(UpsertAgentReq)returns(UpsertAgentResp);
+  rpc RunAgent(RunAgentReq)returns(RunAgentResp);
+}
+message UpsertAgentReq{
+  int64 agent_id=1;
+}
+message UpsertAgentResp{
+
+}
+message RunAgentReq{
+
+}
+message RunAgentResp{
+
+}

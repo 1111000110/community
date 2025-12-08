@@ -1,9 +1,9 @@
 package svc
 
 import (
-	"github.com/zeromicro/go-zero/core/stores/redis"
 	model "community/infra/review/model"
 	"community/infra/review/rpc/internal/config"
+	"github.com/zeromicro/go-zero/core/stores/redis"
 )
 
 type ServiceContext struct {

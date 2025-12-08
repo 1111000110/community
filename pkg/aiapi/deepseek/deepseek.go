@@ -472,17 +472,3 @@ func (c *Client) SendStream(callback func(*StreamResponse)) error {
 
 	return nil
 }
-
-// QuickChat 快速聊天方法 - 简化调用
-func QuickChat(req string) (string, error) {
-	c := NewClient("k-4be9e334908f4c2087cf68df508883f3")
-	c.AddUserMessage(req)
-	resp, err := c.Send()
-	if err != nil {
-		return "", err
-	}
-	if len(resp.Choices) > 0 {
-		return resp.Choices[0].Message.Content, nil
-	}
-	return "", fmt.Errorf("没有收到有效响应")
-}

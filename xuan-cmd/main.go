@@ -1,7 +1,7 @@
 package main
 
 import (
-	"community/xuan/cmd"
+	"community/xuan-cmd/cmd"
 )
 
 func main() {

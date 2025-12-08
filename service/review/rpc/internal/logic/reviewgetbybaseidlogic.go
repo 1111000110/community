@@ -1,15 +1,15 @@
 package logic
 
 import (
+	model "community/review/model"
+	"community/review/model/redisKey"
+	"community/review/rpc/generateFileV1/internal/svc"
+	"community/review/rpc/pb"
 	"context"
 	"encoding/json"
 	"errors"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"math"
-	model "community/review/model"
-	"community/review/model/redisKey"
-	"community/review/rpc/generateFileV1/internal/svc"
-	"community/review/rpc/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
