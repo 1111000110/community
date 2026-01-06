@@ -14,3 +14,7 @@ xuan-cmd/xuan
 node_modules/
 # 忽略Python虚拟环境目录（本地环境配置，无需版本控制）
 venv/
+# 忽略IDE配置文件目录（本地IDE配置，无需版本控制）
+.idea/
+# 忽略编辑器配置文件（本地编辑器配置，无需版本控制）
+.vscode/
