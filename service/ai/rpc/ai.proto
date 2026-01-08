@@ -1,0 +1,64 @@
+syntax = "proto3";// 固定格式
+
+package ai; // 跟文件夹名
+
+option go_package = "./";// 固定格式
+
+message AgentChatConfig {
+  string system_prompt = 1; // 智能体系统提示词（System Prompt）
+  int32 is_stream = 2; // 是否启用流式输出
+  int32 chat_type = 3; // 会话模式,0=每次新会话,1=同sessionId控制同一则会话,2=永久会话
+  int32 chat_round = 4; // 携带的历史对话轮数上限
+  float temperature = 5; // 采样温度（0~1）
+  int32 max_tokens = 6; // 单次生成的最大 token 数
+  float top_p = 7; // 核采样参数（0~1）
+  repeated string enable_tools = 8; // 启用的工具，网络搜索，知识库搜索
+  repeated string enable_functions = 9; // 启用的业务函数白名单
+  ToolConfig tool_config = 10; // 工具级配置，不同工具对应不同执行策略与参数
+  int64 llmId=11; // 模型id
+}
+message ToolConfig {
+  KBSearchConfig kb = 1; // 知识库检索配置
+  WebSearchConfig web = 2; // 联网搜索配置
+}
+// 知识库检索配置
+message KBSearchConfig {
+  repeated string knowledge_list = 1; // 允许挂载的知识库列表（知识库名称）
+  int32 top_k = 2; // 向量检索返回的最大文档条数
+  float score_threshold = 3; // 相似度阈值（0~1），低于该分值的文档将被过滤，避免引入无关内容
+}
+// 联网搜索配置
+message WebSearchConfig {
+  int32 top_k = 1; // 单次搜索返回的最大结果条数
+  int32 recency_days = 2; // 结果时间范围（单位：天），recency_days = 7 表示只返回最近 7 天内的内容
+  repeated string allow_domains = 3; // 允许访问的域名白名单
+  repeated string block_domains = 4; // 禁止访问的域名黑名单
+  int32 max_calls_per_turn = 5; // 每轮对话中允许的最大联网调用次数
+}
+
+message Agent{
+    int64 agent_id = 1;// agent的id
+    string api_key = 2;// agent调用key
+    string name = 3;// 名称
+    string desc = 4;// 描述
+    string icon = 5;// 头像
+    int64 status = 6;// 状态
+    int64 create_time = 7;// 创建时间
+    int64 update_time = 8;// 更新时间
+    AgentChatConfig agent_chat_config = 9;// 智能体聊天配置
+}
+
+service Ai{
+  // agent
+  rpc CreateAgent(CreateAgentReq)returns (CreateAgentResp);// 创建一个新的agent
+  rpc GetAgentList(GetAgentListReq)returns (GetAgentListResp);// 获取全部agent信息
+  // llm
+}
+message CreateAgentReq{
+    Agent agent = 1;
+}
+message CreateAgentResp{}
+message GetAgentListReq{}
+message GetAgentListResp{
+  repeated Agent agent_list = 1;
+}

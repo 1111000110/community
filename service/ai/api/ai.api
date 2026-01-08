@@ -1,0 +1,110 @@
+syntax = "v1"
+
+info (
+	title:   "ai模块"
+	desc:    "ai模块"
+	author:  "张璇"
+	email:   "xatuzx2025@163.com"
+	version: "1.0"
+)
+
+type (
+    AgentChatConfig{
+        Prompt                 string   `json:"prompt"`                 // 核心角色
+        NeedNetSearch          int      `json:"needNetSearch"`          // 联网搜： 0不需要 1需要
+        IsStream               int      `json:"isStream"`               // 1 流 0非流  
+        ChatType               int      `json:"chatType"`               // 0保持原回话 1开启新回话(不带上下文)
+        ChatRound              int      `json:"chatRound"`              // 携带上下文轮数
+        Temperature            float32  `json:"temperature"`            // 温度 0-1 0不怎么随机 1随机性大
+        KnowledgeList          []string `json:"knowledgeList"`          // 知识库列表
+    }
+    Agent{
+        AgentId int64 `json:"agent_id"`
+        ApiKey string `json:"api_key"`
+        Name string `json:"name"`
+        Desc string `json:"desc"`
+        Icon string `json:"icon"`
+        Status int64 `json:"status"`
+        CreateTime int64 `json:"create_time"`
+        UpdateTime int64 `json:"update_time"`
+        AgentChatConfig AgentChatConfig `json:"agent_chat_config"`
+    }
+)
+
+
+type (
+	MessageDetail {
+		MessageId  int64          `json:"message_id"`
+		SessionId  string         `json:"session_id"`
+		SendId     int64          `json:"send_id"`
+		ReplyId    int64          `json:"reply_id"`
+		CreateTime int64          `json:"create_time"`
+		UpdateTime int64          `json:"update_time"`
+		Status     int64          `json:"status"`
+		Content    MessageContent `json:"content"`
+	}
+	MessageContent {
+		Text        string `json:"text"`
+		MessageType int64  `json:"message_type"`
+		Addition    string `json:"addition"`
+	}
+)
+
+type (
+	MessageCreateReq {
+		SessionId string         `json:"session_id"`
+		SendId    int64          `json:"send_id"`
+		ReplyId   int64          `json:"reply_id"`
+		Status    int64          `json:"status"`
+		Content   MessageContent `json:"content"`
+	}
+	MessageCreateResp  {}
+)
+
+type (
+	MessageUpdateByIdReq {
+		MessageDetail MessageDetail `json:"message_detail"`
+	}
+	MessageUpdateByIdResp  {}
+)
+
+type (
+	MessageDeleteByIdReq {
+		SessionId string `json:"session_id"`
+		SendId    int64  `json:"send_id"`
+		MessageId int64  `json:"message_id"`
+	}
+	MessageDeleteByIdResp  {}
+)
+
+type (
+	MessageListReq {
+		SessionId string `json:"session_id"`
+		Req       int64  `json:"req"`
+		Limit     int64  `json:"limit"`
+	}
+	MessageListResp {
+		MessageDetails []MessageDetail `json:"message_details"`
+	}
+)
+
+@server (
+	group:    message // 统一管理用户相关 API
+	timeout:  3s // 超时时间
+	maxBytes: 1048576 // 最大结构体
+	jwt:      Auth // JWT 认证
+)
+service Message {
+	@handler MessageCreate
+	post /message/create (MessageCreateReq) returns (MessageCreateResp)
+
+	@handler MessageUpdateById
+	post /message/update/id (MessageUpdateByIdReq) returns (MessageUpdateByIdResp)
+
+	@handler MessageDeleteById
+	post /message/delete/id (MessageDeleteByIdReq) returns (MessageDeleteByIdResp)
+
+	@handler MessageList
+	post /message/list (MessageListReq) returns (MessageListResp)
+}
+

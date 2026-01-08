@@ -1,4 +1,4 @@
-package client
+package messageclient
 
 const (
 	MsgStatusNormal   int64 = 0 // 正常：消息成功发送/接收，状态正常

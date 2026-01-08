@@ -10,7 +10,7 @@ if ! command -v goctl >/dev/null 2>&1; then
     GO_BIN="$GOPATH_DIR/bin"
 
     # 安装 goctl 到 GOPATH/bin
-    if ! go install github.com/zeromicro/go-zero/tools/goctl@latest; then
+    if ! go install github.com/zeromicro/go-zero/tools/goctl@v1.9.2; then
         echo "goctl 安装失败"
         exit 1
     fi

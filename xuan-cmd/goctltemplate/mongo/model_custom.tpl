@@ -3,8 +3,12 @@ package model
 {{if .Cache}}import (
     "github.com/zeromicro/go-zero/core/stores/cache"
     "github.com/zeromicro/go-zero/core/stores/monc"
-){{else}}import "github.com/zeromicro/go-zero/core/stores/mon"{{end}}
-
+    "community/conf/databases/xmongo"
+){{else}}
+import (
+    "github.com/zeromicro/go-zero/core/stores/mon"{{end}}
+    "community/conf/databases/xmongo"
+)
 {{if .Easy}}
 const {{.Type}}CollectionName = "{{.snakeType}}"
 {{end}}
@@ -36,3 +40,11 @@ type (
         default{{.Type}}Model: newDefault{{.Type}}Model(conn),
     }
 }{{end}}
+
+// NewCommunityModel returns a community model for the mongo. It's Zhang Xuan's local model.
+func NewCommunityModel(collection string) {{.Type}}Model {
+	conn := xmongo.GetMongoCommunityClient(collection)
+	return &custom{{.Type}}Model{
+		default{{.Type}}Model: newDefault{{.Type}}Model(conn),
+	}
+}

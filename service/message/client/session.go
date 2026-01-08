@@ -1,4 +1,4 @@
-package client
+package messageclient
 
 import (
 	"community/pkg/xstring"

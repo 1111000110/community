@@ -9,7 +9,7 @@ import (
 
     {{if .Cache}}"github.com/zeromicro/go-zero/core/stores/monc"{{else}}"github.com/zeromicro/go-zero/core/stores/mon"{{end}}
     "go.mongodb.org/mongo-driver/v2/bson"
-    "go.mongodb.org/mongo-driver/v2/mongo"
+    "go.mongodb.org/mongo-driver/mongo"
 )
 
 {{if .Cache}}var prefix{{.Type}}CacheKey = "{{if .Prefix}}{{.Prefix}}:{{end}}cache:{{.lowerType}}:"{{end}}
@@ -33,8 +33,8 @@ func newDefault{{.Type}}Model(conn {{if .Cache}}*monc.Model{{else}}*mon.Model{{e
 func (m *default{{.Type}}Model) Insert(ctx context.Context, data *{{.Type}}) error {
     if data.ID.IsZero() {
         data.ID = bson.NewObjectID()
-        data.CreateAt = time.Now()
-        data.UpdateAt = time.Now()
+		data.CreateTime = time.Now().Unix()
+		data.UpdateTime = time.Now().Unix()
     }
 
     {{if .Cache}}key := prefix{{.Type}}CacheKey + data.ID.Hex(){{end}}
@@ -62,7 +62,7 @@ func (m *default{{.Type}}Model) FindOne(ctx context.Context, id string) (*{{.Typ
 }
 
 func (m *default{{.Type}}Model) Update(ctx context.Context, data *{{.Type}}) (*mongo.UpdateResult, error) {
-    data.UpdateAt = time.Now()
+	data.UpdateTime = time.Now().Unix()
     {{if .Cache}}key := prefix{{.Type}}CacheKey + data.ID.Hex(){{end}}
     res, err := m.conn.UpdateOne(ctx, {{if .Cache}}key, {{end}}bson.M{"_id": data.ID}, bson.M{"$set": data})
     return res, err
